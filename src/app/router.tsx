@@ -23,7 +23,10 @@ import { RoutePermissionGuard } from '../shared/permissions';
 import { APP_ROUTE_PATTERNS, APP_ROUTES } from './config/routes';
 import { AppLayout } from './layout/AppLayout';
 import { getMockPermissions } from './mockAccess';
-import { ReportsPlaceholder } from './pages/ReportsPlaceholder';
+import FuturePlanningPage from '../features/gestion-estructuras/pages/FuturePlanningPage';
+import { HistoryPage } from '../features/history/pages/HistoryPage';
+import { InitialLoadsPage } from '../features/initial-loads/pages/InitialLoadsPage';
+import { ReportsHubPage } from '../features/reports/pages/ReportsHubPage';
 
 function relativePath(absolutePath: string): string {
 	return absolutePath.replace(/^\//, '');
@@ -183,6 +186,20 @@ export const router = createBrowserRouter([
 				),
 			},
 			{
+				path: relativePath(APP_ROUTES.structurePlanning),
+				element: (
+					<RoutePermissionGuard
+						anyOfPermissions={[
+							SECURITY_PERMISSION_CODES.STRUCTURE_VIEW,
+							SECURITY_PERMISSION_CODES.GROUP_VIEW,
+						]}
+						moduleLabel="Planeación Futura"
+					>
+						<FuturePlanningPage />
+					</RoutePermissionGuard>
+				),
+			},
+			{
 				path: relativePath(APP_ROUTES.reports),
 				element: (
 					<RoutePermissionGuard
@@ -192,7 +209,7 @@ export const router = createBrowserRouter([
 						]}
 						moduleLabel="Reportes"
 					>
-						<ReportsPlaceholder />
+						<ReportsHubPage />
 					</RoutePermissionGuard>
 				),
 			},
@@ -203,10 +220,21 @@ export const router = createBrowserRouter([
 						moduleLabel="Historial"
 						requiredPermission={SECURITY_PERMISSION_CODES.HISTORY_VIEW}
 					>
-						<section style={{ padding: '16px 0' }}>
-							<h1>Consulta del historial</h1>
-							<p>Módulo de bitácora y auditoría de movimientos.</p>
-						</section>
+						<HistoryPage />
+					</RoutePermissionGuard>
+				),
+			},
+			{
+				path: relativePath(APP_ROUTES.initialLoads),
+				element: (
+					<RoutePermissionGuard
+						anyOfPermissions={[
+							SECURITY_PERMISSION_CODES.STRUCTURE_VIEW,
+							SECURITY_PERMISSION_CODES.GROUP_VIEW,
+						]}
+						moduleLabel="Cargas Iniciales Masivas"
+					>
+						<InitialLoadsPage />
 					</RoutePermissionGuard>
 				),
 			},

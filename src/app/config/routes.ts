@@ -11,6 +11,7 @@ export const APP_ROUTES = {
 	structures: '/structures',
 	structureOperations: '/structures/operations',
 	structureCorporate: '/structures/corporate',
+	structurePlanning: '/structures/planning',
 
 	reports: '/reports',
 	history: '/history',

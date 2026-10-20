@@ -1,0 +1,17 @@
+{
+  "type": "/problems/validation-error",
+  "title": "Solicitud inválida",
+  "status": 400,
+  "detail": "Uno o más campos no cumplen las reglas de validación.",
+  "instance": "/api/v1/roles",
+  "code": "VALIDATION_ERROR",
+  "timestamp": "2026-09-22T10:35:00-06:00",
+  "correlationId": "corr-validation-01",
+  "errors": [
+    {
+      "field": "name",
+      "message": "La longitud mínima es 3.",
+      "rejectedValue": "AB"
+    }
+  ]
+}

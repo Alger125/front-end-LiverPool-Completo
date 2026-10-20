@@ -1,0 +1,11 @@
+{
+  "type": "/problems/protected-role",
+  "title": "Rol protegido",
+  "status": 409,
+  "detail": "El rol de sistema no puede eliminarse.",
+  "instance": "/api/v1/roles/06d6ef42-5fd5-4a85-8e9a-09c19a64185c",
+  "code": "ROLE_PROTECTED",
+  "timestamp": "2026-09-22T10:35:00-06:00",
+  "correlationId": "corr-protected-01",
+  "currentVersion": 1
+}

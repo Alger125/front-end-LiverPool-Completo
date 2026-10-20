@@ -1,0 +1,41 @@
+{
+  "items": [
+    {
+      "id": "3d377584-c0c5-4391-b4f9-b11ae93f4bfd",
+      "code": "STRUCTURE_ADMIN",
+      "name": "Administrador de estructuras",
+      "description": "Administra grupos, secciones y movimientos.",
+      "status": "ACTIVE",
+      "protected": false,
+      "permissionCount": 6,
+      "version": 3,
+      "updatedAt": "2026-09-22T10:30:00-06:00"
+    },
+    {
+      "id": "06d6ef42-5fd5-4a85-8e9a-09c19a64185c",
+      "code": "SYSTEM_ADMIN",
+      "name": "Administrador del sistema",
+      "description": "Rol técnico protegido con acceso administrativo.",
+      "status": "ACTIVE",
+      "protected": true,
+      "permissionCount": 14,
+      "version": 1,
+      "updatedAt": "2026-09-20T08:00:00-06:00"
+    },
+    {
+      "id": "cc342a01-09d4-44f8-b7b1-c51e36339acc",
+      "code": "STRUCTURE_EDITOR",
+      "name": "Editor de estructuras",
+      "description": "Consulta y edita grupos y secciones dentro de su alcance.",
+      "status": "ACTIVE",
+      "protected": false,
+      "permissionCount": 4,
+      "version": 2,
+      "updatedAt": "2026-09-21T16:15:00-06:00"
+    }
+  ],
+  "page": 0,
+  "pageSize": 20,
+  "totalItems": 3,
+  "totalPages": 1
+}

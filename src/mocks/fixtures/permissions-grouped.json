@@ -1,0 +1,328 @@
+{
+  "modules": [
+    {
+      "code": "SECURITY_ROLES",
+      "displayName": "Seguridad - Roles",
+      "description": "Administración de roles, catálogo de permisos y excepciones.",
+      "displayOrder": 10,
+      "permissions": [
+        {
+          "code": "ROLE_VIEW",
+          "module": "SECURITY_ROLES",
+          "action": "VIEW",
+          "displayName": "Consultar roles",
+          "description": "Listar, buscar y consultar roles.",
+          "displayOrder": 10,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "ROLE_CREATE",
+          "module": "SECURITY_ROLES",
+          "action": "CREATE",
+          "displayName": "Crear roles",
+          "description": "Crear un rol y asociarle permisos.",
+          "displayOrder": 20,
+          "assignable": true,
+          "sensitive": true,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "ROLE_UPDATE",
+          "module": "SECURITY_ROLES",
+          "action": "UPDATE",
+          "displayName": "Editar roles",
+          "description": "Modificar nombre, descripción y permisos.",
+          "displayOrder": 30,
+          "assignable": true,
+          "sensitive": true,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "ROLE_DELETE",
+          "module": "SECURITY_ROLES",
+          "action": "DELETE",
+          "displayName": "Eliminar roles",
+          "description": "Eliminar lógicamente un rol y revocar asignaciones.",
+          "displayOrder": 40,
+          "assignable": true,
+          "sensitive": true,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "ROLE_IMPACT_VIEW",
+          "module": "SECURITY_ROLES",
+          "action": "IMPACT_VIEW",
+          "displayName": "Consultar impacto de un rol",
+          "description": "Consultar asignaciones y excepciones afectadas.",
+          "displayOrder": 50,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "PERMISSION_VIEW",
+          "module": "SECURITY_ROLES",
+          "action": "VIEW",
+          "displayName": "Consultar permisos",
+          "description": "Consultar el catálogo de permisos.",
+          "displayOrder": 60,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "ROLE_EXCEPTION_VIEW",
+          "module": "SECURITY_ROLES",
+          "action": "VIEW",
+          "displayName": "Consultar excepciones de rol",
+          "description": "Consultar asignaciones temporales por excepción.",
+          "displayOrder": 70,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "ROLE_EXCEPTION_CREATE",
+          "module": "SECURITY_ROLES",
+          "action": "CREATE",
+          "displayName": "Asignar rol por excepción",
+          "description": "Otorgar un rol temporal a un colaborador.",
+          "displayOrder": 80,
+          "assignable": true,
+          "sensitive": true,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "ROLE_EXCEPTION_REVOKE",
+          "module": "SECURITY_ROLES",
+          "action": "DELETE",
+          "displayName": "Revocar excepción de rol",
+          "description": "Revocar anticipadamente una asignación por excepción.",
+          "displayOrder": 90,
+          "assignable": true,
+          "sensitive": true,
+          "status": "ACTIVE",
+          "notes": null
+        }
+      ]
+    },
+    {
+      "code": "COMMERCIAL_GROUPS",
+      "displayName": "Grupos comerciales",
+      "description": "Administración de grupos dentro de departamentos.",
+      "displayOrder": 60,
+      "permissions": [
+        {
+          "code": "GROUP_VIEW",
+          "module": "COMMERCIAL_GROUPS",
+          "action": "VIEW",
+          "displayName": "Consultar grupos",
+          "description": "Consultar grupos dentro del alcance autorizado.",
+          "displayOrder": 10,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "GROUP_CREATE",
+          "module": "COMMERCIAL_GROUPS",
+          "action": "CREATE",
+          "displayName": "Crear grupo",
+          "description": "Crear un grupo en un departamento autorizado.",
+          "displayOrder": 20,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "GROUP_UPDATE",
+          "module": "COMMERCIAL_GROUPS",
+          "action": "UPDATE",
+          "displayName": "Editar grupo",
+          "description": "Modificar datos editables de un grupo.",
+          "displayOrder": 30,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "GROUP_INACTIVATE",
+          "module": "COMMERCIAL_GROUPS",
+          "action": "INACTIVATE",
+          "displayName": "Inactivar grupo",
+          "description": "Cerrar la vigencia de un grupo.",
+          "displayOrder": 40,
+          "assignable": true,
+          "sensitive": true,
+          "status": "ACTIVE",
+          "notes": null
+        }
+      ]
+    },
+    {
+      "code": "SECTIONS",
+      "displayName": "Secciones",
+      "description": "Consulta y asignación de secciones.",
+      "displayOrder": 70,
+      "permissions": [
+        {
+          "code": "SECTION_VIEW",
+          "module": "SECTIONS",
+          "action": "VIEW",
+          "displayName": "Consultar secciones",
+          "description": "Consultar secciones asignadas, disponibles y ancla.",
+          "displayOrder": 10,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "SECTION_ASSIGN",
+          "module": "SECTIONS",
+          "action": "ASSIGN",
+          "displayName": "Asignar sección",
+          "description": "Asignar una sección disponible a un grupo.",
+          "displayOrder": 20,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "SECTION_MOVE",
+          "module": "SECTIONS",
+          "action": "MOVE",
+          "displayName": "Mover sección",
+          "description": "Mover una sección entre grupos del mismo departamento.",
+          "displayOrder": 30,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "SECTION_UNASSIGN",
+          "module": "SECTIONS",
+          "action": "UNASSIGN",
+          "displayName": "Desasignar sección",
+          "description": "Retirar una sección normal de un grupo.",
+          "displayOrder": 40,
+          "assignable": true,
+          "sensitive": true,
+          "status": "ACTIVE",
+          "notes": "No aplica a Sección Ancla."
+        }
+      ]
+    },
+    {
+      "code": "REPORTS_ROLE",
+      "displayName": "Reporte por Rol",
+      "description": "Generación y descarga del reporte de estructuras por rol.",
+      "displayOrder": 80,
+      "permissions": [
+        {
+          "code": "REPORT_ROLE_VIEW",
+          "module": "REPORTS_ROLE",
+          "action": "VIEW",
+          "displayName": "Consultar reporte por rol",
+          "description": "Generar y visualizar vista previa del reporte por rol.",
+          "displayOrder": 10,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "REPORT_ROLE_DOWNLOAD",
+          "module": "REPORTS_ROLE",
+          "action": "DOWNLOAD",
+          "displayName": "Descargar reporte por rol",
+          "description": "Exportar reporte por rol en formato CSV o TXT.",
+          "displayOrder": 20,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        }
+      ]
+    },
+    {
+      "code": "REPORTS_GENERAL",
+      "displayName": "Reporte General",
+      "description": "Generación y descarga del reporte general por rango de fechas.",
+      "displayOrder": 90,
+      "permissions": [
+        {
+          "code": "REPORT_GENERAL_VIEW",
+          "module": "REPORTS_GENERAL",
+          "action": "VIEW",
+          "displayName": "Consultar reporte general",
+          "description": "Generar y visualizar vista previa del reporte general.",
+          "displayOrder": 10,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "REPORT_GENERAL_DOWNLOAD",
+          "module": "REPORTS_GENERAL",
+          "action": "DOWNLOAD",
+          "displayName": "Descargar reporte general",
+          "description": "Exportar reporte general en formato CSV o TXT.",
+          "displayOrder": 20,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        }
+      ]
+    },
+    {
+      "code": "AUDIT_HISTORY",
+      "displayName": "Historial y Auditoría",
+      "description": "Consulta y exportación de bitácora de movimientos.",
+      "displayOrder": 100,
+      "permissions": [
+        {
+          "code": "HISTORY_VIEW",
+          "module": "AUDIT_HISTORY",
+          "action": "VIEW",
+          "displayName": "Consultar historial",
+          "description": "Consultar bitácora y auditoría de movimientos.",
+          "displayOrder": 10,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        },
+        {
+          "code": "HISTORY_DOWNLOAD",
+          "module": "AUDIT_HISTORY",
+          "action": "DOWNLOAD",
+          "displayName": "Descargar historial CSV",
+          "description": "Exportar bitácora de auditoría en formato CSV.",
+          "displayOrder": 20,
+          "assignable": true,
+          "sensitive": false,
+          "status": "ACTIVE",
+          "notes": null
+        }
+      ]
+    }
+  ]
+}

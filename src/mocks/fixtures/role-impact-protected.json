@@ -1,0 +1,10 @@
+{
+  "roleId": "06d6ef42-5fd5-4a85-8e9a-09c19a64185c",
+  "protected": true,
+  "activeAssignments": 1,
+  "activeExceptions": 0,
+  "canDelete": false,
+  "warnings": [
+    "El rol es de sistema y no puede eliminarse."
+  ]
+}

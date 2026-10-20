@@ -1,0 +1,16 @@
+:root {
+	--color-brand: #464feb;
+	--color-border: #e6e6e6;
+	--color-surface-muted: #f5f5f5;
+	--color-surface: #ffffff;
+	--color-text: #202024;
+	--focus-ring: 0 0 0 3px rgb(70 79 235 / 35%);
+	--layout-header-height: 4rem;
+	--layout-sidebar-width: 16rem;
+	--space-2: 0.5rem;
+	--space-3: 0.75rem;
+	--space-4: 1rem;
+	--space-6: 1.5rem;
+	--space-8: 2rem;
+	--content-max-width: 90rem;
+}

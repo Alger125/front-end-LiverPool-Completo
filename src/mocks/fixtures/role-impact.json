@@ -1,0 +1,11 @@
+{
+  "roleId": "3d377584-c0c5-4391-b4f9-b11ae93f4bfd",
+  "protected": false,
+  "activeAssignments": 27,
+  "activeExceptions": 3,
+  "canDelete": true,
+  "warnings": [
+    "Las asignaciones activas serán revocadas.",
+    "Existen excepciones vinculadas al rol."
+  ]
+}

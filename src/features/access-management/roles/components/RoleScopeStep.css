@@ -1,0 +1,228 @@
+.role-scope {
+    --scope-purple: #865080;
+    --scope-purple-dark: #6d3d68;
+    --scope-purple-soft: #f4edf4;
+    --scope-border: #d5cdd5;
+    --scope-text: #252128;
+    --scope-muted: #817881;
+    --scope-error: #b42348;
+
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.role-scope__role-name {
+    margin: 0 0 26px;
+
+    color: var(--scope-text);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.role-scope__role-name strong {
+    font-weight: 700;
+}   
+
+.role-scope__card {
+    min-width: 0;
+    margin: 0;
+    padding: 24px 30px 32px;
+
+    background: #ffffff;
+    border: 1px solid
+       var(--scope-border);
+    border-radius: 15px;
+    box-shadow:
+       0 14px 32px
+            rgba(59, 39, 60, 0.05),
+        0 2px 7px
+            rgba(59, 39, 60, 0.04);
+}
+.role-scope__legend {
+    padding: 0 8px;
+
+    color: var(--scope-text);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.role-scope__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    margin-top: 22px;
+}
+
+.role-scope__label {
+    color: var(--scope-text);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.role-scope-select {
+    position: relative;
+
+    width: 100%;
+}
+
+.role-scope-select__summary {    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    min-height: 48px;
+    padding: 0px 15px;
+
+    color: var(--scope-muted);
+    font-size: 14px;
+
+    background: #ffffff;
+    border: 1px solid #a99faa;
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.role-scope-select__summary::-webkit-details-marker {
+    display: none;
+}
+
+.role-scope-select__summary::marker {
+    content: '';
+}
+
+.role-scope-select__summary:hover {
+    border-color: var(--scope-purple);
+}
+
+.role-scope-select__summary:focus-visible {
+    outline: none;
+    border-color: var(--scope-purple);
+    box-shadow: 0 0 0 3px rgba(134, 80, 128, 0.18);
+}
+
+.role-scope-select__summary[aria-invalid='true'] {
+    border-color: var(--scope-error);
+}
+
+.role-scope-select__arrow {
+    width: 0;
+    height: 0;
+
+    border-top: 6px solid var(--scope-purple);
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+
+    transition: transform 160ms ease;
+}
+
+.role-scope-select[open] .role-scope-select__arrow {
+    transform: rotate(180deg);
+}
+
+.role-scope-select__options {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: 0;
+    z-index: 30;
+
+    max-height: 230px;
+    padding: 8px;
+
+    overflow-y: auto;
+
+    background: #ffffff;
+    border: 1px solid var(--scope-border);
+    border-radius: 10px;
+    box-shadow: 0 16px 35px rgba(55, 66, 58, 0.16);
+}
+
+.role-scope-select__option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 11px;
+    color: var(--scope-text);
+    font-size: 14px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+}
+
+.role-scope-select__option:hover,
+.role-scope-select__option:focus-within {
+    background:
+        var(--scope-purple-soft);
+}
+
+.role-scope-select__option
+    input {
+    width: 18px;
+    height: 18px;
+
+    accent-color:
+        var(--scope-purple);
+}
+
+.role-scope-select__empty {
+    margin: 0;
+    padding: 14px;
+
+    color: var(--scope-muted);
+    text-align: center;
+}
+
+.role-scope__managed-option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    margin: 24px 10px 6px;
+    color: var(--scope-text);
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.role-scope__managed-option
+    input {
+    width: 18px;
+    height: 18px;
+
+    accent-color:
+        var(--scope-purple);
+}
+
+.role-scope__error {
+    margin: 0;
+
+    color: var(--scope-error);
+    font-size: 13px;
+}
+
+@media (max-width: 770px) {
+    .role-scope__card {
+        padding: 22px 17px 24px;
+    }
+    .role-scope-select__options {
+        position: static;
+
+        margin-top: 8px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .role-scope-select__summary,
+    .role-scope-select__arrow {
+        transition: none;
+    }
+}

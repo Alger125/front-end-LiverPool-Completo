@@ -1,0 +1,20 @@
+import { SECURITY_PERMISSION_CODES } from '../../features/access-management/model/permission.model';
+import type { GrantedPermissions } from '../../shared/permissions';
+
+/*
+ * Permisos simulados para trabajar con MSW.
+ *
+ * Este perfil solo debe utilizarse en desarrollo
+ * cuando VITE_USE_MOCKS=true.
+ */
+export const MOCK_ROLE_PERMISSIONS: GrantedPermissions = [
+	SECURITY_PERMISSION_CODES.ROLE_VIEW,
+	SECURITY_PERMISSION_CODES.ROLE_CREATE,
+	SECURITY_PERMISSION_CODES.ROLE_UPDATE,
+	SECURITY_PERMISSION_CODES.ROLE_DELETE,
+	SECURITY_PERMISSION_CODES.ROLE_IMPACT_VIEW,
+	SECURITY_PERMISSION_CODES.PERMISSION_VIEW,
+	SECURITY_PERMISSION_CODES.ROLE_EXCEPTION_VIEW,
+	SECURITY_PERMISSION_CODES.ROLE_EXCEPTION_CREATE,
+	SECURITY_PERMISSION_CODES.ROLE_EXCEPTION_REVOKE,
+];

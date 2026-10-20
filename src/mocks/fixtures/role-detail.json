@@ -1,0 +1,85 @@
+{
+  "id": "3d377584-c0c5-4391-b4f9-b11ae93f4bfd",
+  "code": "STRUCTURE_ADMIN",
+  "name": "Administrador de estructuras",
+  "description": "Administra grupos, secciones y movimientos.",
+  "status": "ACTIVE",
+  "protected": false,
+  "permissionCount": 6,
+  "version": 3,
+  "updatedAt": "2026-09-22T10:30:00-06:00",
+  "permissions": [
+    {
+      "code": "GROUP_VIEW",
+      "module": "COMMERCIAL_GROUPS",
+      "action": "VIEW",
+      "displayName": "Consultar grupos",
+      "description": "Consultar grupos dentro del alcance autorizado.",
+      "displayOrder": 10,
+      "assignable": true,
+      "sensitive": false,
+      "status": "ACTIVE",
+      "notes": null
+    },
+    {
+      "code": "GROUP_CREATE",
+      "module": "COMMERCIAL_GROUPS",
+      "action": "CREATE",
+      "displayName": "Crear grupo",
+      "description": "Crear un grupo en un departamento autorizado.",
+      "displayOrder": 20,
+      "assignable": true,
+      "sensitive": false,
+      "status": "ACTIVE",
+      "notes": null
+    },
+    {
+      "code": "GROUP_UPDATE",
+      "module": "COMMERCIAL_GROUPS",
+      "action": "UPDATE",
+      "displayName": "Editar grupo",
+      "description": "Modificar datos editables de un grupo.",
+      "displayOrder": 30,
+      "assignable": true,
+      "sensitive": false,
+      "status": "ACTIVE",
+      "notes": null
+    },
+    {
+      "code": "SECTION_VIEW",
+      "module": "SECTIONS",
+      "action": "VIEW",
+      "displayName": "Consultar secciones",
+      "description": "Consultar secciones asignadas, disponibles y ancla.",
+      "displayOrder": 10,
+      "assignable": true,
+      "sensitive": false,
+      "status": "ACTIVE",
+      "notes": null
+    },
+    {
+      "code": "SECTION_ASSIGN",
+      "module": "SECTIONS",
+      "action": "ASSIGN",
+      "displayName": "Asignar sección",
+      "description": "Asignar una sección disponible a un grupo.",
+      "displayOrder": 20,
+      "assignable": true,
+      "sensitive": false,
+      "status": "ACTIVE",
+      "notes": null
+    },
+    {
+      "code": "SECTION_MOVE",
+      "module": "SECTIONS",
+      "action": "MOVE",
+      "displayName": "Mover sección",
+      "description": "Mover una sección entre grupos del mismo departamento.",
+      "displayOrder": 30,
+      "assignable": true,
+      "sensitive": false,
+      "status": "ACTIVE",
+      "notes": null
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+.role-form__submit-error {
+    margin: 18px 0;
+    padding: 14px 16px;
+
+    color: #b42318;
+    font-size: 14px;
+    line-height: 1.5;
+
+    background-color: #fff4f2;
+    border: 1px solid #f2c7c2;
+    border-radius: 8px;
+}

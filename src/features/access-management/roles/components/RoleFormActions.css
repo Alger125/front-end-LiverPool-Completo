@@ -1,0 +1,185 @@
+.role-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    width: 100%;
+}
+
+.role-form-actions__secondary,
+.role-form-actions__primary {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.role-form-actions__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 124px;
+    min-height: 44px;
+    padding: 10px 22px;
+
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition:
+        color 160ms ease,
+        background-color 160ms ease,
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.role-form-actions__button:focus-visible {
+    outline: 3px solid
+        rgba(
+            134,
+            80,
+            128,
+            0.25
+        );
+    outline-offset: 3px;
+}
+
+.role-form-actions__button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.role-form-actions__button--cancel {
+    color: #5e345c;
+
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.role-form-actions__button--cancel:hover:not(
+        :disabled
+    ) {
+    color: #472345;
+
+    background-color: #f5eff5;
+}
+
+.role-form-actions__button--back {
+    color: #74416f;
+
+    background-color: #ffffff;
+    border-color: #865080;
+}
+
+.role-form-actions__button--back:hover:not(
+        :disabled
+    ) {
+    color: #5e345c;
+
+    background-color: #f7f1f7;
+    border-color: #6d3d68;
+}
+
+.role-form-actions__button--next,
+.role-form-actions__button--submit {
+    color: #ffffff;
+
+    background-color: #865080;
+    border-color: #865080;
+
+    box-shadow:
+        0 5px 12px
+            rgba(
+                94,
+                52,
+                92,
+                0.18
+            );
+}
+
+.role-form-actions__button--next:hover:not(
+        :disabled
+    ),
+.role-form-actions__button--submit:hover:not(
+        :disabled
+    ) {
+    background-color: #6d3d68;
+    border-color: #6d3d68;
+
+    box-shadow:
+        0 7px 16px
+            rgba(
+                94,
+                52,
+                92,
+                0.24
+            );
+
+    transform:
+        translateY(-1px);
+}
+
+.role-form-actions__button--next:active:not(
+        :disabled
+    ),
+.role-form-actions__button--submit:active:not(
+        :disabled
+    ) {
+    box-shadow:
+        0 3px 8px
+            rgba(
+                94,
+                52,
+                92,
+                0.16
+            );
+
+    transform:
+        translateY(0);
+}
+
+@media (max-width: 640px) {
+    .role-form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .role-form-actions__secondary,
+    .role-form-actions__primary {
+        display: grid;
+        grid-template-columns:
+            1fr;
+        width: 100%;
+    }
+
+    .role-form-actions__button {
+        width: 100%;
+    }
+}
+
+@media (
+    prefers-reduced-motion:
+        reduce
+) {
+    .role-form-actions__button {
+        transition: none;
+    }
+
+    .role-form-actions__button--next:hover:not(
+            :disabled
+        ),
+    .role-form-actions__button--submit:hover:not(
+            :disabled
+        ) {
+        transform: none;
+    }
+}

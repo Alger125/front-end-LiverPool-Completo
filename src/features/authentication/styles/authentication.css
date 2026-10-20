@@ -1,0 +1,408 @@
+.sso-login {
+	display: grid;
+	grid-template-columns: 42% 58%;
+	min-height: 100vh;
+	width: 100%;
+	background-color: #f8f5fb;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.sso-login__hero {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 56px 56px 72px;
+	background-color: #5e3b8d;
+	color: #ffffff;
+}
+
+.sso-login__brand {
+	font-size: 36px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	margin: 0;
+}
+
+.sso-login__hero-body {
+	margin: auto 0;
+	max-width: 440px;
+}
+
+.sso-login__hero-title {
+	font-size: 46px;
+	font-weight: 700;
+	line-height: 1.16;
+	margin: 0 0 28px;
+}
+
+.sso-login__hero-subtitle {
+	font-size: 18px;
+	font-weight: 400;
+	line-height: 1.5;
+	margin: 0;
+	color: rgba(255, 255, 255, 0.94);
+}
+
+.sso-login__panel {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 24px;
+}
+
+.sso-login__card {
+	width: 100%;
+	max-width: 460px;
+	min-height: 480px;
+	background-color: #ffffff;
+	border-radius: 14px;
+	box-shadow: 0 12px 32px rgba(45, 24, 74, 0.08);
+	padding: 52px 48px 44px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.sso-login__title {
+	font-size: 38px;
+	font-weight: 700;
+	color: #1c1b1f;
+	margin: 0 0 16px;
+}
+
+.sso-login__subtitle {
+	font-size: 15px;
+	color: #3b3840;
+	margin: 0 0 32px;
+}
+
+.sso-login__submit {
+	width: 100%;
+	min-height: 52px;
+	padding: 14px 24px;
+	border: none;
+	border-radius: 10px;
+	background-color: #624198;
+	color: #ffffff;
+	font-size: 15px;
+	font-weight: 700;
+	cursor: pointer;
+	transition: background-color 0.16s ease, transform 0.1s ease;
+}
+
+.sso-login__submit:hover:not(:disabled) {
+	background-color: #513382;
+}
+
+.sso-login__submit:disabled {
+	opacity: 0.7;
+	cursor: wait;
+}
+
+.sso-login__helper {
+	font-size: 13px;
+	color: #3b3840;
+	margin: 22px 0 0;
+}
+
+.sso-login__alert {
+	margin-top: 20px;
+	padding: 12px 16px;
+	border-radius: 8px;
+	background-color: #fef2f2;
+	border: 1px solid #fecaca;
+	color: #991b1b;
+	font-size: 13px;
+	line-height: 1.45;
+}
+
+.sso-login__simulator {
+	margin-top: 28px;
+	padding-top: 18px;
+	border-top: 1px dashed #e2dce9;
+}
+
+.sso-login__simulator-label {
+	display: block;
+	font-size: 12px;
+	font-weight: 700;
+	color: #5c5368;
+	margin-bottom: 6px;
+}
+
+.sso-login__simulator-select {
+	width: 100%;
+	padding: 9px 12px;
+	border: 1px solid #d4cce0;
+	border-radius: 8px;
+	background-color: #faf8fc;
+	color: #26222c;
+	font-size: 13px;
+}
+
+.sso-login__simulator-hint {
+	margin: 6px 0 0;
+	font-size: 11px;
+	color: #6f667a;
+}
+
+.sso-login__footer {
+	margin-top: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.sso-login__secure-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 7px 20px;
+	border-radius: 999px;
+	background-color: #2e7d32;
+	color: #ffffff;
+	font-size: 12px;
+	font-weight: 700;
+}
+
+/* Modal & Session Screens (CU-SEC-007) */
+.session-modal-backdrop {
+	position: fixed;
+	inset: 0;
+	background-color: rgba(24, 20, 30, 0.56);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	z-index: 1100;
+}
+
+.session-modal {
+	position: relative;
+	width: 100%;
+	max-width: 520px;
+	background-color: #ffffff;
+	border-radius: 18px;
+	padding: 36px 40px 32px;
+	box-shadow: 0 20px 48px rgba(18, 12, 28, 0.24);
+	color: #1f1c24;
+}
+
+.session-modal--processing {
+	text-align: center;
+	padding: 52px 40px;
+	max-width: 460px;
+}
+
+.session-modal__close {
+	position: absolute;
+	top: 18px;
+	right: 22px;
+	border: none;
+	background: transparent;
+	color: #5b5563;
+	font-size: 18px;
+	cursor: pointer;
+	padding: 4px 8px;
+	border-radius: 6px;
+}
+
+.session-modal__header {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 18px;
+}
+
+.session-modal__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	font-size: 20px;
+	font-weight: 700;
+	flex-shrink: 0;
+}
+
+.session-modal__icon--logout {
+	background-color: #fff0f6;
+	border: 1.5px solid #e11d74;
+	color: #e11d74;
+}
+
+.session-modal__icon--warning {
+	background-color: #fffbeb;
+	border: 1.5px solid #d97706;
+	color: #b45309;
+}
+
+.session-modal__title {
+	font-size: 24px;
+	font-weight: 700;
+	margin: 0;
+	color: #1b1922;
+}
+
+.session-modal__body {
+	font-size: 15px;
+	line-height: 1.55;
+	color: #2f2b36;
+	margin: 0 0 12px;
+}
+
+.session-modal__note {
+	font-size: 13px;
+	color: #6b6375;
+	margin: 14px 0 28px;
+}
+
+.session-modal__actions {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+}
+
+.session-modal__btn {
+	min-width: 132px;
+	min-height: 44px;
+	padding: 10px 22px;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.session-modal__btn--secondary {
+	background-color: #ffffff;
+	border: 1px solid #d4cedc;
+	color: #231f29;
+}
+
+.session-modal__btn--secondary:hover {
+	background-color: #f6f3f9;
+}
+
+.session-modal__btn--primary {
+	background-color: #8f0066;
+	border: 1px solid #8f0066;
+	color: #ffffff;
+}
+
+.session-modal__btn--primary:hover {
+	background-color: #740052;
+}
+
+.session-modal__spinner {
+	width: 56px;
+	height: 56px;
+	margin: 0 auto 24px;
+	border-radius: 50%;
+	border: 4px solid #f5e6ef;
+	border-top-color: #e1007a;
+	animation: zdeptos-spin 0.85s linear infinite;
+}
+
+@keyframes zdeptos-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Full-screen post-session views (CU-SEC-007) */
+.session-status-page {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #ffffff;
+	padding: 32px 20px;
+}
+
+.session-status-card {
+	max-width: 540px;
+	width: 100%;
+	text-align: center;
+	padding: 40px 28px;
+}
+
+.session-status-card__circle {
+	width: 84px;
+	height: 84px;
+	border-radius: 50%;
+	margin: 0 auto 28px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 32px;
+	font-weight: 700;
+}
+
+.session-status-card__circle--success {
+	background-color: #eefbf3;
+	border: 2px solid #2e7d52;
+	color: #1b6e44;
+}
+
+.session-status-card__circle--expired {
+	background-color: #fef9ec;
+	border: 2px solid #c27803;
+	color: #9a5b00;
+}
+
+.session-status-card__title {
+	font-size: 36px;
+	font-weight: 700;
+	color: #1b2432;
+	margin: 0 0 18px;
+}
+
+.session-status-card__description {
+	font-size: 16px;
+	line-height: 1.55;
+	color: #5b6472;
+	margin: 0 auto 36px;
+	max-width: 460px;
+}
+
+.session-status-card__cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 220px;
+	min-height: 48px;
+	padding: 12px 28px;
+	background-color: #e1007a;
+	color: #ffffff;
+	border: none;
+	border-radius: 8px;
+	font-size: 15px;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.session-status-card__cta:hover {
+	background-color: #bf0068;
+}
+
+@media (max-width: 900px) {
+	.sso-login {
+		grid-template-columns: 1fr;
+	}
+
+	.sso-login__hero {
+		padding: 36px 28px;
+	}
+
+	.sso-login__hero-title {
+		font-size: 32px;
+	}
+
+	.sso-login__card {
+		padding: 36px 28px;
+		min-height: auto;
+	}
+}

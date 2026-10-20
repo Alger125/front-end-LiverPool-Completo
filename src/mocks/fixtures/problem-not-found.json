@@ -1,0 +1,10 @@
+{
+  "type": "/problems/role-not-found",
+  "title": "Rol no encontrado",
+  "status": 404,
+  "detail": "No existe un rol con el identificador solicitado.",
+  "instance": "/api/v1/roles/00000000-0000-0000-0000-000000000000",
+  "code": "ROLE_NOT_FOUND",
+  "timestamp": "2026-09-22T10:35:00-06:00",
+  "correlationId": "corr-not-found-01"
+}

@@ -1,0 +1,124 @@
+.app-sidebar {
+	position: sticky;
+	top: 64px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 228px;
+	height: calc(100vh - 64px);
+	padding: 24px 14px;
+	background-color: #18161a;
+	color: #f3eff7;
+	font-family: Arial, Helvetica, sans-serif;
+	overflow-y: auto;
+	z-index: 250;
+}
+
+.app-sidebar__mobile-header {
+	display: none;
+}
+
+.app-sidebar__navigation {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.app-sidebar__link {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-height: 44px;
+	padding: 0 14px;
+	color: #dcd6e4;
+	font-size: 14px;
+	font-weight: 500;
+	text-decoration: none;
+	border-radius: 10px;
+	white-space: nowrap;
+	transition: background-color 0.14s ease, color 0.14s ease;
+}
+
+.app-sidebar__link:hover {
+	background-color: rgba(255, 255, 255, 0.08);
+	color: #ffffff;
+}
+
+.app-sidebar__link--active {
+	background-color: rgba(149, 102, 226, 0.26);
+	color: #ffffff;
+	font-weight: 700;
+}
+
+.app-sidebar__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	font-size: 16px;
+	flex-shrink: 0;
+}
+
+.app-sidebar__footer {
+	margin-top: 28px;
+	padding: 12px 14px;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	font-size: 11px;
+	color: #9e96a8;
+	line-height: 1.5;
+}
+
+@media (max-width: 960px) {
+	.app-sidebar {
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		width: min(270px, 82vw);
+		height: 100vh;
+		height: 100dvh;
+		padding: 18px 14px 24px;
+		transform: translateX(-100%);
+		transition: transform 0.22s ease;
+		box-shadow: 10px 0 32px rgba(0, 0, 0, 0.42);
+		z-index: 500;
+	}
+
+	.app-sidebar--open {
+		transform: translateX(0);
+	}
+
+	.app-sidebar__mobile-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 4px 10px 16px;
+		margin-bottom: 12px;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	}
+
+	.app-sidebar__mobile-brand {
+		font-size: 16px;
+		font-weight: 700;
+		color: #d6b4fc;
+		letter-spacing: -0.01em;
+	}
+
+	.app-sidebar__mobile-close {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border: 1px solid rgba(255, 255, 255, 0.18);
+		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.06);
+		color: #ffffff;
+		font-size: 14px;
+		cursor: pointer;
+	}
+
+	.app-sidebar__mobile-close:hover {
+		background: rgba(255, 255, 255, 0.14);
+	}
+}

@@ -71,7 +71,11 @@ Para facilitar el mantenimiento, la revisión de código por pares y atender sol
 
 ---
 
-## 📖 Mapeo de Casos de Uso y Funcionalidades
+## 📖 Mapeo de Casos de Uso, Funcionalidades y Endpoints API
+
+> **Nota sobre Métodos HTTP:** En la arquitectura REST, las operaciones de actualización (**UPDATE**) se implementan mediante **`PUT`** (para reemplazo o actualización completa de entidad) y **`PATCH`** (para modificación parcial de campos, como mover secciones entre grupos en `PATCH /structures/departments/:id/sections/move`). El método `UPDATE` no existe en la especificación HTTP; se utilizan `PUT` y `PATCH`.
+
+---
 
 ### Feature 1: Autenticación SSO, Layout, Home y Buscador Global
 * **`CU-SEC-001` (Login SSO Corporativo):**
@@ -82,6 +86,21 @@ Para facilitar el mantenimiento, la revisión de código por pares y atender sol
   * Saludo personalizado (*"Hola, [Nombre]"*), contexto de sesión (perfil activo, colaborador, ubicación, alcance, excepción vigente) y tarjetas modulares dinámicas autorizadas según permisos efectivos.
 * **`CU-HOM-003` (Buscador Global con Alcance):**
   * Barra con lupa en header y vista `/search` con búsqueda reactiva en tiempo real sobre departamentos, grupos, secciones y colaboradores acotados al alcance del usuario.
+
+#### 📡 Endpoints Conectados (Feature 1)
+
+| Método HTTP | Endpoint API | Caso de Uso / HU | Descripción, Parámetros y Headers |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/v1/auth/sso/callback` | `CU-SEC-001` / `HU-01` | **Inicio de Sesión SSO:** Valida token Microsoft Entra ID (`accessToken`), consulta el usuario en PostgreSQL (`zd_security.app_user`), resuelve roles/permisos en BD y crea sesión. |
+| `POST` | `/api/v1/auth/session/keep-alive` | `CU-SEC-001` / `CU-SEC-007` | **Latido de Sesión:** Renueva la vigencia de la sesión activa en el backend (inactividad 15 min). Header `x-session-id`. |
+| `POST` | `/api/v1/auth/logout` | `CU-SEC-007` / `HU-03` | **Cierre de Sesión:** Invalida el token en blacklist e inserta evento en auditoría. Body: `{ reason: "MANUAL" \| "INACTIVITY" }`. |
+| `GET` | `/api/v1/auth/session` | `CU-SEC-001` / `CU-SEC-007` | **Validación de Sesión:** Verifica si la sesión continúa activa y retorna tiempo antes de expiración. |
+| `GET` | `/api/v1/users/me/profile` | `CU-HOM-001` / `HU-07` | **Perfil y Saludo:** Consulta datos en PostgreSQL (`zd_security.app_user`), saludo *"Hola, [Nombre]"*, rol activo y tiendas autorizadas. |
+| `GET` | `/api/v1/users/me/modules` | `CU-HOM-002` / `HU-08` | **Módulos Autorizados:** Lista los módulos habilitados dinámicamente según permisos asignados en BD. |
+| `GET` | `/api/v1/search` | `CU-HOM-003` / `HU-09` | **Búsqueda Global Unificada:** Búsqueda reactiva en tiempo real sobre departamentos, colaboradores y secciones. Query: `?q={criterio}&limit=10`. |
+| `GET` | `/api/v1/search/departments` | `CU-HOM-003` / `HU-10` | **Buscador de Departamentos:** Filtro de departamentos comerciales acotados a tiendas autorizadas. Query: `?q={nombreOcodigo}`. |
+| `GET` | `/api/v1/search/employees` | `CU-HOM-003` / `HU-11` | **Buscador de Colaboradores:** Filtro de colaboradores por nombre o número de nómina. Query: `?q={nombreOempleado}`. |
+| `GET` | `/api/v1/search/sections` | `CU-HOM-003` / `HU-12` | **Buscador de Secciones:** Filtro de secciones comerciales dentro del alcance. Query: `?q={nombreOcodigo}`. |
 
 ---
 
@@ -96,6 +115,31 @@ Para facilitar el mantenimiento, la revisión de código por pares y atender sol
   * Modal de advertencia que consulta previamente `/impact`, muestra los usuarios afectados y bloquea la baja de roles protegidos por sistema.
 * **`CU-SEC-006` (Asignación por Excepción a Colaboradores):**
   * Buscador de empleado, asignación temporal de rol y ubicación con justificación obligatoria y revocación anticipada.
+
+#### 📡 Endpoints Conectados (Feature 2)
+
+| Método HTTP | Endpoint API | Caso de Uso / HU | Descripción, Parámetros y Headers |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/roles` | `CU-SEC-004` / `HU-13` | **Catálogo de Roles:** Lista de roles con buscador y regla de alcance resultante. |
+| `POST` | `/api/v1/roles` | `CU-SEC-004` / `HU-14` | **Crear Rol:** Alta de rol con nombre, descripción, segmentación y matriz de permisos. Body: `CreateRoleDto`. |
+| `GET` | `/api/v1/roles/:roleId` | `CU-SEC-002` / `CU-SEC-005` | **Detalle de Rol:** Consulta la ficha técnica del rol en solo lectura o para edición. |
+| `PUT` | `/api/v1/roles/:roleId` | `CU-SEC-005` / `HU-15` | **Actualizar Rol (UPDATE):** Actualización completa del rol con control de concurrencia optimista (`409 Conflict`) mediante el header `If-Match: "{version}"`. |
+| `DELETE` | `/api/v1/roles/:roleId` | `CU-SEC-003` / `HU-16` | **Baja de Rol:** Baja lógica de rol; bloquea la eliminación si es un rol protegido del sistema. |
+| `POST` | `/api/v1/roles/:roleId/clone` | `CU-SEC-004` / `HU-17` | **Clonar Rol:** Clona un rol existente como plantilla base para nuevas creaciones. |
+| `GET` | `/api/v1/roles/:roleId/segmentation` | `CU-SEC-004` / `HU-18` | **Consultar Segmentación:** Consulta la regla de alcance por negocio, zona o tienda. |
+| `PUT` | `/api/v1/roles/:roleId/segmentation` | `CU-SEC-004` / `HU-18` | **Actualizar Segmentación (UPDATE):** Define el alcance geográfico y de puestos del rol. |
+| `GET` | `/api/v1/roles/:roleId/impact` | `CU-SEC-003` / `HU-19` | **Matriz de Impacto:** Previsualiza usuarios y asignaciones afectadas antes de eliminar el rol. |
+| `GET` | `/api/v1/permissions/grouped` | `CU-SEC-004` / `CU-SEC-005` | **Matriz de Permisos Agrupada:** Catálogo de permisos clasificados por módulo funcional (`SECURITY_ROLES`, `STRUCTURE_CONFIG`, etc.). |
+| `GET` | `/api/v1/permissions` | `CU-SEC-004` | **Catálogo Plano de Permisos:** Lista completa de permisos del sistema para validaciones internas. |
+| `GET` | `/api/v1/users` | `CU-SEC-006` / `HU-20` | **Catálogo de Colaboradores:** Consulta y autocompletado de colaboradores para asignar roles o excepciones. |
+| `GET` | `/api/v1/access-scopes` | `CU-SEC-006` / `HU-21` | **Catálogo de Alcances:** Lista de tiendas, zonas y áreas para definir el alcance de excepciones. |
+| `GET` | `/api/v1/role-exceptions` | `CU-SEC-006` / `HU-22` | **Listado de Excepciones:** Consulta de excepciones temporales activas, programadas o revocadas. |
+| `POST` | `/api/v1/role-exceptions` | `CU-SEC-006` / `HU-23` | **Crear Excepción:** Asigna un rol temporal a un colaborador con fecha de inicio/fin y justificación obligatoria. |
+| `GET` | `/api/v1/role-exceptions/:id` | `CU-SEC-006` / `HU-24` | **Detalle de Excepción:** Información completa de la excepción temporal. |
+| `PUT` | `/api/v1/role-exceptions/:id` | `CU-SEC-006` / `HU-25` | **Actualizar Excepción (UPDATE):** Modifica la vigencia o justificación de una excepción activa. |
+| `POST` | `/api/v1/role-exceptions/:id/revoke` | `CU-SEC-006` / `HU-26` | **Revocar Excepción:** Revocación anticipada de una excepción de acceso temporal con motivo obligatorio. |
+| `POST` | `/api/v1/role-exceptions/impact` | `CU-SEC-006` / `HU-27` | **Impacto de Revocación:** Calcula los permisos que el colaborador perderá antes de confirmar la revocación. |
+| `POST` | `/api/v1/role-exceptions/bulk` | `CU-SEC-006` / `HU-28` | **Carga Masiva de Excepciones:** Procesamiento en bloque de múltiples excepciones temporales. |
 
 ---
 
@@ -117,6 +161,30 @@ Para facilitar el mantenimiento, la revisión de código por pares y atender sol
 * **`CU-ADM-004` (Movimiento de Secciones entre Grupos):**
   * Pantalla interactiva *Grupo Origen* vs *Grupo Destino*, bandeja de *Cambios pendientes de guardar* y modal *"Confirmar movimientos"* detallando los colaboradores anclados impactados.
 
+#### 📡 Endpoints Conectados (Feature 3)
+
+| Método HTTP | Endpoint API | Caso de Uso / HU | Descripción, Parámetros y Headers |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/geography/zones` | `CU-EST-001` / `HU-29` | **Catálogo de Zonas:** Zonas geográficas operativas (Metro Centro, Golfo, Norte, etc.). |
+| `GET` | `/api/v1/geography/zones/:zoneId/locations` | `CU-EST-001` / `HU-30` | **Tiendas de la Zona:** Ubicaciones y formatos (Liverpool / Suburbia) asociadas a una zona. |
+| `GET` | `/api/v1/structures/tree` | `CU-EST-001` / `HU-31` | **Árbol de Estructura Comercial:** Jerarquía Tienda $\rightarrow$ Depto $\rightarrow$ Grupo $\rightarrow$ Sección con Sección Ancla (🔒), Responsable Heredado (↳) y vacantes. Query: `?locationId={uuid}&period={YYYY-MM}`. |
+| `GET` | `/api/v1/structures/locations/:locationId/summary` | `CU-EST-001` / `HU-32` | **Resumen de Tienda:** Métricas consolidadas de departamentos, grupos y secciones de una tienda. |
+| `GET` | `/api/v1/structures/departments/:departmentId/groups` | `CU-ADM-001` / `CU-ADM-002` | **Grupos del Departamento:** Lista de grupos comerciales con secciones asignadas, sección ancla y colaboradores vinculados. |
+| `GET` | `/api/v1/structures/departments/:departmentId/aggregated-sections` | `CU-ADM-001` / `HU-33` | **Secciones Consolidadas:** Vista agrupada de todas las secciones del departamento. |
+| `GET` | `/api/v1/structures/departments/:departmentId/available-sections` | `CU-ADM-002` / `CU-ADM-004` | **Secciones Disponibles:** Catálogo de secciones no ancladas disponibles para ser asociadas o trasladadas. |
+| `POST` | `/api/v1/structures/departments/:departmentId/groups` | `CU-ADM-002` / `HU-34` | **Crear Grupo:** Alta de nuevo grupo comercial en el departamento con validación de nombre único. Body: `{ name: string, displayCode?: string }`. |
+| `PUT` | `/api/v1/structures/groups/:groupId` | `CU-ADM-002` / `HU-35` | **Renombrar Grupo (UPDATE):** Modificación del nombre o código de despliegue del grupo comercial. |
+| `DELETE` | `/api/v1/structures/groups/:groupId` | `CU-ADM-003` / `HU-36` | **Eliminar Grupo:** Validación de elegibilidad; **bloquea la eliminación** si contiene Sección Ancla o es el único grupo del depto. |
+| `PATCH` | `/api/v1/structures/departments/:departmentId/sections/move` | `CU-ADM-004` / `HU-37` | **Mover Secciones entre Grupos (PATCH):** Traslado transaccional parcial de una o varias secciones entre grupos. Body: `{ sectionIds: string[], sourceGroupId: string, targetGroupId: string }`. *(¡Lleva método PATCH por ser modificación parcial de estado!)* |
+| `POST` | `/api/v1/structures/groups/:groupId/sections` | `CU-ADM-004` / `HU-38` | **Asignar Sección:** Vincula una sección disponible al grupo comercial. |
+| `DELETE` | `/api/v1/structures/groups/:groupId/sections/:sectionId` | `CU-ADM-004` / `HU-39` | **Desasignar Sección:** Desvincula una sección del grupo; bloquea si es Sección Ancla (🔒). |
+| `POST` | `/api/v1/structures/departments/:departmentId/publish` | `CU-ADM-004` / `HU-40` | **Publicar Cambios de Estructura:** Aplica formalmente las modificaciones realizadas en la estructura operativa del departamento. |
+| `GET` | `/api/v1/structures/compras-pac/tree` | `CU-EST-001` / `DEC-01` | **Árbol Compras y PAC:** Estructura corporativa de Compras (Hardline/Softline) y PAC con exclusión de áreas no comerciales. Query: `?structureType=COMPRAS\|PAC`. |
+| `GET` | `/api/v1/structures/config/base-departments` | `DEC-15` / `HU-022` | **Configuración Deptos Base:** Consulta departamentos base de Compras y PAC. |
+| `PUT` | `/api/v1/structures/config/base-departments` | `DEC-15` / `HU-022` | **Actualizar Deptos Base (UPDATE):** Guarda la configuración de departamentos base corporativos. |
+| `GET` | `/api/v1/structures/suburbia-advisors` | `DEC-16` / `HU-19` | **Asesores Suburbia:** Consulta del nodo 70051507 (Asesor Especializado Experiencia Cliente). |
+| `GET` | `/api/v1/structures/collaborators/:id/managed-sections` | `HU-041` | **Secciones que Administra Colaborador:** Consulta de Sección Ancla + secciones heredadas del grupo. |
+
 ---
 
 ### Feature 4: Planeación Futura, Cierre de Periodo y Concurrencia
@@ -132,6 +200,19 @@ Para facilitar el mantenimiento, la revisión de código por pares y atender sol
 * **`CU-ADM-008` (Control de Versiones y Concurrencia Departamental):**
   * Detección de conflicto 409 si otro usuario modifica el departamento, visualizando versión consultada vs vigente y botón *"Actualizar información"*.
 
+#### 📡 Endpoints Conectados (Feature 4)
+
+| Método HTTP | Endpoint API | Caso de Uso / HU | Descripción, Parámetros y Headers |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/v1/structures/departments/:departmentId/future-draft/init` | `CU-ADM-005` / `HU-42` | **Inicializar Borrador Futuro:** Clona la topología del mes actual para planificar en paralelo el mes siguiente (Mes+1). |
+| `GET` | `/api/v1/structures/scheduled-changes` | `CU-ADM-006` / `HU-43` | **Bandeja de Cambios Programados:** Lista de publicaciones programadas pendientes de entrar en vigor por periodo. |
+| `POST` | `/api/v1/structures/scheduled-changes` | `CU-ADM-006` / `HU-44` | **Programar Publicación Futura:** Agenda el cambio de estructura con fecha/hora de vigencia (ventana hasta 6 meses) y motivo justificado. |
+| `PUT` | `/api/v1/structures/scheduled-changes/:changeId` | `CU-ADM-006` / `HU-45` | **Modificar Cambio Programado (UPDATE):** Modifica la fecha de vigencia o notas de un cambio programado no aplicado. |
+| `POST` | `/api/v1/structures/scheduled-changes/:changeId/cancel` | `CU-ADM-006` / `HU-46` | **Cancelar Publicación Programada:** Cancela un cambio programado antes de su fecha de activación. |
+| `GET` | `/api/v1/structures/calendar/operational-cutoff` | `CU-ADM-007` / `BR-07` | **Consultar Corte Operativo:** Consulta la fecha/hora de corte operativo semanal/mensual (Día 25 / martes 23:59:59) que bloquea ediciones. |
+| `PUT` | `/api/v1/structures/calendar/operational-cutoff` | `CU-ADM-007` / `BR-07` | **Actualizar Corte Operativo (UPDATE):** Modificación administrativa de la ventana de corte operativo. |
+| `POST` | `/api/v1/structures/periods/:periodCode/activate` | `CU-ADM-005` / `HU-47` | **Cierre y Activación de Periodo:** Concluye el periodo de planeación y activa oficialmente el nuevo periodo como vigente. |
+
 ---
 
 ### Feature 5: Módulo de Reportes Oficiales
@@ -141,6 +222,17 @@ Para facilitar el mantenimiento, la revisión de código por pares y atender sol
   * Flujo de 3 pasos: Filtros generales (Mes/Año, Negocio, Zona, Departamento) → Selección de columnas en 3 bloques (*Estructura*, *Puestos y Personas*, *Relaciones*) → Vista previa y descarga real en **`.CSV`** y **`.TXT`**.
 * **`CU-EST-003` (Reporte General por Rango de Fechas):**
   * Flujo de 3 pasos con validación de fechas (no invertidas y máximo 1 año calendario), selección de columnas autorizadas y exportación condicionada al permiso `REPORT_GENERAL_DOWNLOAD`.
+
+#### 📡 Endpoints Conectados (Feature 5)
+
+| Método HTTP | Endpoint API | Caso de Uso / HU | Descripción, Parámetros y Headers |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/reports/metadata/columns` | `CU-EST-002` / `HU-48` | **Metadatos de Columnas:** Catálogo dinámico de columnas disponibles en 3 bloques (*Estructura*, *Puestos y Personas*, *Relaciones*). |
+| `GET` | `/api/v1/reports/role-based` | `CU-EST-002` / `HU-49` | **Reporte por Rol y Periodo:** Generación tabular con filtros de Mes/Año, Negocio, Zona, Tienda y Departamento. |
+| `GET` | `/api/v1/reports/general` | `CU-EST-003` / `HU-50` | **Reporte General por Rango de Fechas:** Validación de fechas (máximo 1 año calendario) y extracción consolidada. |
+| `GET` | `/api/v1/reports/compensations` | `CU-REP-002` / `HU-51` | **Reporte de Compensaciones:** Generación de información para conciliación de compensaciones y nómina. |
+| `GET` | `/api/v1/reports/export/csv` | `CU-EST-002` / `CU-EST-003` | **Exportación a CSV:** Descarga directa del reporte generado en formato `.CSV` con codificación UTF-8 / Latin1. |
+| `GET` | `/api/v1/reports/export/txt` | `CU-EST-002` / `CU-EST-003` | **Exportación a TXT:** Descarga directa del reporte en formato `.TXT` delimitado para procesamiento batch. |
 
 ---
 
@@ -155,6 +247,15 @@ Para facilitar el mantenimiento, la revisión de código por pares y atender sol
   * Zona drag & drop para subir archivos `.CSV` o `.XLSX`.
   * **Motor de conciliación previa:** Detección de filas válidas, advertencias y errores bloqueantes.
   * Modal para aplicar los registros válidos directamente a la estructura comercial activa.
+
+#### 📡 Endpoints Conectados (Feature 6)
+
+| Método HTTP | Endpoint API | Caso de Uso / HU | Descripción, Parámetros y Headers |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/audit/logs` | `CU-HIS-001` / `HU-52` | **Bitácora de Auditoría:** Consulta paginada con filtros por fechas, usuario, tienda y tipo de acción (`AUTH_*`, `STRUCTURE_*`, `ROLE_*`). |
+| `GET` | `/api/v1/audit/logs/:eventId` | `CU-HIS-001` / `HU-53` | **Detalle de Evento de Auditoría:** Ficha técnica del movimiento con comparador visual de diff Antes (`before_value`) vs Después (`after_value`). |
+| `GET` | `/api/v1/admin/batch-import/layout` | `CU-CIN-001` / `HU-54` | **Descargar Plantilla Oficial:** Descarga el layout oficial vigente `.CSV` / `.XLSX` para la carga masiva de estructuras. |
+| `POST` | `/api/v1/admin/batch-import` | `CU-CIN-001` / `HU-55` | **Ejecutar Carga Masiva:** Subida de archivo (multipart/form-data), motor de conciliación previa con conteo de filas válidas, advertencias y errores bloqueantes. |
 
 ---
 

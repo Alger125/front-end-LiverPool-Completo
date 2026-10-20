@@ -17,10 +17,11 @@
    - [Feature 4: Planeación Futura, Cierre de Periodo y Concurrencia](#feature-4-planeación-futura-cierre-de-periodo-y-concurrencia)
    - [Feature 5: Módulo de Reportes Oficiales](#feature-5-módulo-de-reportes-oficiales)
    - [Feature 6: Historial de Auditoría y Cargas Iniciales Masivas](#feature-6-historial-de-auditoría-y-cargas-iniciales-masivas)
-5. [Perfiles de Prueba y Roles del Sistema](#perfiles-de-prueba-y-roles-del-sistema)
-6. [Guía de Instalación y Ejecución Local](#guía-de-instalación-y-ejecución-local)
-7. [Scripts Disponibles y Testing](#scripts-disponibles-y-testing)
-8. [Mapa de Rutas de la Aplicación](#mapa-de-rutas-de-la-aplicación)
+5. [Especificación Integral de Contratos DTO y Schemas OpenAPI 3.0](#especificación-integral-de-contratos-dto-y-schemas-openapi-30)
+6. [Perfiles de Prueba y Roles del Sistema](#perfiles-de-prueba-y-roles-del-sistema)
+7. [Guía de Instalación y Ejecución Local](#guía-de-instalación-y-ejecución-local)
+8. [Scripts Disponibles y Testing](#scripts-disponibles-y-testing)
+9. [Mapa de Rutas de la Aplicación](#mapa-de-rutas-de-la-aplicación)
 
 ---
 
@@ -256,6 +257,670 @@ Para facilitar el mantenimiento, la revisión de código por pares y atender sol
 | `GET` | `/api/v1/audit/logs/:eventId` | `CU-HIS-001` / `HU-53` | **Detalle de Evento de Auditoría:** Ficha técnica del movimiento con comparador visual de diff Antes (`before_value`) vs Después (`after_value`). |
 | `GET` | `/api/v1/admin/batch-import/layout` | `CU-CIN-001` / `HU-54` | **Descargar Plantilla Oficial:** Descarga el layout oficial vigente `.CSV` / `.XLSX` para la carga masiva de estructuras. |
 | `POST` | `/api/v1/admin/batch-import` | `CU-CIN-001` / `HU-55` | **Ejecutar Carga Masiva:** Subida de archivo (multipart/form-data), motor de conciliación previa con conteo de filas válidas, advertencias y errores bloqueantes. |
+
+
+---
+
+## 📘 Especificación Integral de Contratos DTO y Schemas OpenAPI 3.0
+
+Esta sección documenta formalmente los contratos tipados en **TypeScript** (Request DTOs, Query DTOs, Response DTOs y Errores RFC 9457) que la arquitectura frontend consume del backend integrado ([http://localhost:3000/api/docs](http://localhost:3000/api/docs)). Permite al equipo de frontend copiar y tipar directamente los modelos en `src/types/` o `src/services/api/`.
+
+### 1. Cabeceras Obligatorias y Manejo de Errores Estándar (RFC 9457)
+
+#### Cabeceras HTTP Obligatorias
+* `Content-Type: application/json`
+* `x-dev-api-key: dev-api-key-zdeptos-2026`: Requerida para autenticación en entorno local.
+* `x-session-id: <uuid>`: ID de sesión emitido por `POST /api/v1/auth/sso/callback`.
+* `If-Match: "<version>"`: Requerido en mutaciones concurrentes (`PUT /roles/:id`, `PUT /groups/:id`, `DELETE /groups/:id`, `DELETE /groups/:id/sections/:id`).
+
+#### Estructura Estándar de Errores (RFC 9457 & 409 Conflict)
+```typescript
+export interface ProblemDetailsResponse {
+  type: string;        // URI identificador del tipo de error
+  title: string;       // Resumen legible del error
+  status: number;      // Código HTTP (400, 401, 403, 404, 409, 422, 500)
+  detail: string;      // Explicación técnica o de regla de negocio
+  instance?: string;   // Endpoint o recurso que originó la falla
+  code?: string;       // Código interno (ej. "ANCHOR_SECTION_LOCKED", "DUPLICATE_GROUP_NAME")
+  invalidParams?: Array<{ field: string; message: string }>;
+}
+
+export interface VersionConflictErrorResponse {
+  statusCode: 409;
+  error: "Conflict";
+  message: string;     // ej. "Conflicto de concurrencia: el departamento ha sido modificado por otro usuario."
+  expectedVersion: number;
+  currentVersion: number;
+}
+```
+
+---
+
+### 2. Feature 1: Autenticación SSO y Gestión de Sesiones (`/api/v1/auth/*`)
+Archivo DTO backend: `src/modules/auth/presentation/dto/auth.dto.ts`
+
+```typescript
+// POST /api/v1/auth/sso/callback
+export interface SsoCallbackRequestDto {
+  accessToken: string; // Token delegado emitido por MS Entra ID
+  idToken?: string;
+  sessionId?: string;
+}
+
+// Respuesta de sesión (POST /auth/sso/callback, POST /auth/keepalive, GET /auth/session)
+export interface AuthenticatedSessionResponseDto {
+  ok: boolean;
+  sessionId: string;
+  status: "ACTIVE" | "REVOKED" | "EXPIRED_INACTIVITY";
+  expiresAt: string;     // ISO Date: ej. "2026-10-19T18:45:00.000Z"
+  idleTimeoutMs: number; // 900000 ms = 15 min de inactividad
+  user: {
+    id: string;
+    oid?: string;
+    tid?: string;
+    name?: string;       // ej. "César Coronado"
+    email?: string;      // ej. "ccoronado@liverpool.com.mx"
+    roles: string[];     // ["ROL-001", "ROL-004"]
+    permissions: string[]; // ["STRUCTURE_VIEW", "GROUP_CREATE", ...]
+    authorizedGroups: string[];
+    scopes: string[];    // Tiendas o zonas autorizadas
+  };
+}
+
+// POST /api/v1/auth/keepalive
+export interface KeepAliveRequestDto {
+  eventType?: string; // Default: "SESSION_REFRESH"
+  sessionId?: string;
+}
+
+// POST /api/v1/auth/logout
+export interface LogoutRequestDto {
+  closeType?: "MANUAL" | "INACTIVITY";
+  sessionId?: string;
+}
+
+export interface LogoutResponseDto {
+  ok: boolean;
+  message: string;
+  closeType: "MANUAL" | "INACTIVITY";
+  sessionId?: string;
+  multiTabInvalidated: boolean;
+  ssoLogoutUrl?: string; // URL corporativa de cierre en Microsoft Entra ID
+}
+```
+
+---
+
+### 3. Feature 1: Home, Identidad y Buscador Global (`/api/v1/users/me/*`, `/api/v1/search/*`)
+Archivo DTO backend: `src/modules/home-search/presentation/dto/home-search.dto.ts`
+
+```typescript
+// GET /api/v1/users/me/profile
+export interface UserExceptionSummaryDto {
+  exceptionId: string;
+  roleCode: string;
+  roleName: string;
+  validFrom: string;
+  validTo: string | null;
+  scopes: string[];
+}
+
+export interface UserProfileResponseDto {
+  userId: string;
+  displayName: string;
+  greeting: string;        // "Hola, César Coronado"
+  avatarInitials: string;  // "CC"
+  email: string;
+  employeeNumber?: string | null;
+  positionTitle?: string | null;
+  status: string;
+  activeRole: string;      // "Administrador de Plataforma"
+  roles: Array<{ code: string; name: string }>;
+  activeExceptions: UserExceptionSummaryDto[];
+  effectiveScope: {
+    isGlobal: boolean;
+    scopeSummary: string;
+    authorizedLocationIds: string[];
+    authorizedLocationNames: string[];
+  };
+  lastAccessAt: string;
+}
+
+// GET /api/v1/users/me/modules
+export interface AuthorizedModuleItemDto {
+  code: "ESTRUCTURAS" | "ROLES_PERMISOS" | "REPORTES" | "HISTORIAL";
+  title: string;    // "Gestión de Estructuras"
+  subtitle: string; // "Zona → Sección"
+  route: string;    // "/estructuras"
+  actions: {
+    canView: boolean;
+    canCreate: boolean;
+    canEdit: boolean;
+    canDelete: boolean;
+    canPublish: boolean;
+    canExport: boolean;
+  };
+}
+
+export interface UserModulesResponseDto {
+  userId: string;
+  modules: AuthorizedModuleItemDto[];
+  effectivePermissions: string[];
+}
+
+// GET /api/v1/search/unified (y buscadores específicos)
+export interface GlobalSearchQueryDto {
+  q: string;             // Texto de búsqueda (mínimo 1 carácter)
+  locationId?: string;   // UUID de tienda opcional
+  departmentId?: string; // UUID de departamento opcional
+  groupId?: string;      // UUID de grupo opcional
+  limit?: number;        // Default: 10 (máx. 50)
+}
+
+export interface DepartmentSearchResultDto {
+  id: string;
+  code: string;
+  name: string;
+  entityType: "MANAGEMENT" | "DEPARTMENT" | "GROUP";
+  locationId: string;
+  locationName: string;
+  breadcrumb: string;  // "Zona 2 / Liverpool Atizapán / Hardline / Línea Blanca"
+  detailRoute: string; // "/estructuras?locationId=...&nodeId=..."
+  reportRoute?: string | null;
+}
+
+export interface EmployeeSearchResultDto {
+  id: string;
+  employeeNumber: string;
+  fullName: string;
+  positionCode: string;
+  positionTitle: string;
+  locationId: string;
+  locationName: string;
+  departmentId: string;
+  departmentName: string;
+  groupName?: string | null;
+  anchorSection?: string | null;
+  status: string;
+  breadcrumb: string;
+}
+
+export interface SectionSearchResultDto {
+  id: string;
+  code: string;
+  name: string;
+  locationId: string;
+  locationName: string;
+  departmentId?: string | null;
+  departmentName?: string | null;
+  groupName?: string | null;
+  assignmentStatus: "ASIGNADA" | "DISPONIBLE";
+  isAnchor: boolean;   // true: Sección Ancla fija 🔒
+  breadcrumb: string;
+}
+
+export interface GlobalSearchUnifiedResponseDto {
+  query: string;
+  total: number;
+  scopeContext: string;
+  message?: string;
+  departments: DepartmentSearchResultDto[];
+  employees: EmployeeSearchResultDto[];
+  sections: SectionSearchResultDto[];
+}
+```
+
+---
+
+### 4. Feature 2: Gestión de Roles, Permisos y Segmentación (`/api/v1/roles/*`)
+Archivo DTO backend: `src/modules/roles/presentation/dto/roles.dto.ts`
+
+```typescript
+// GET /api/v1/roles
+export interface SearchRolesQuery {
+  search?: string;
+  status?: "ACTIVE" | "INACTIVE";
+  page?: number;     // 0-indexed, default: 0
+  pageSize?: number; // default: 20
+  sort?: string;     // "name,asc", "code,desc", "updatedAt,desc"
+}
+
+// POST /api/v1/roles
+export interface CreateRoleRequest {
+  name: string;
+  description: string;
+  permissionCodes: string[];
+}
+
+// PUT /api/v1/roles/:roleId
+export interface UpdateRoleRequest extends CreateRoleRequest {
+  version: number; // Concurrencia optimista
+}
+
+// DELETE /api/v1/roles/:roleId
+export interface DeleteRoleRequest {
+  reason: string;
+  version: number;
+}
+
+// POST /api/v1/roles/:roleId/clone (HU-009 / CU-SEC-002 FA-03)
+export interface CloneRoleRequest {
+  name: string;
+  description?: string;
+  additionalPermissionCodes?: string[];
+  excludedPermissionCodes?: string[];
+}
+
+// GET & PUT /api/v1/roles/:roleId/segmentation (HU-55 / RN-054)
+export type SegmentationAttribute =
+  | "JOB_POSITION"
+  | "LOCATION"
+  | "ZONE"
+  | "DEPARTMENT"
+  | "JOB_LEVEL"
+  | "FUNCTION"
+  | "BUSINESS_DIVISION"
+  | "USER_EMAIL";
+
+export type SegmentationOperator = "EQUALS" | "IN" | "CONTAINS";
+
+export interface SegmentationRuleItemDto {
+  attribute: SegmentationAttribute;
+  operator: SegmentationOperator;
+  values: string[];
+}
+
+export interface UpdateRoleSegmentationRequest {
+  rules: SegmentationRuleItemDto[];
+  scopeLevel: "GLOBAL" | "DIVISION" | "ZONE" | "LOCATION" | "DEPARTMENT" | "GROUP";
+}
+```
+
+---
+
+### 5. Feature 2: Asignaciones de Roles, Excepciones y Alcance (`/api/v1/*`)
+Archivo DTO backend: `src/modules/access-management/dto.ts`
+
+```typescript
+export interface ScopeSelectionDto {
+  accessScopeId: string;        // UUID de Tienda, Zona o Departamento
+  includeDescendants?: boolean; // Default: true
+}
+
+// POST /api/v1/role-assignments
+export interface CreateAssignmentDto {
+  userId: string;
+  roleId: string;
+  origin: "GROUP_MAPPING" | "RULE_BASED" | "MANUAL";
+  scopes: ScopeSelectionDto[];
+  validFrom: string;
+  validTo?: string | null;
+  notes?: string | null;
+}
+
+// PUT /api/v1/role-assignments/:assignmentId
+export interface UpdateAssignmentDto {
+  scopes: ScopeSelectionDto[];
+  validFrom: string;
+  validTo?: string | null;
+  notes?: string | null;
+  version: number;
+}
+
+// POST /api/v1/role-exceptions
+export interface CreateExceptionDto {
+  userId: string;
+  roleId: string;
+  scopes: ScopeSelectionDto[];
+  validFrom: string;
+  validTo: string;       // Requerido en excepciones
+  justification: string; // Mínimo 10 caracteres
+  ticketReference?: string | null;
+}
+
+// POST /api/v1/role-exceptions/bulk (HU-017 / CU-SEC-006 FA-05)
+export interface BulkCreateExceptionDto {
+  userIds: string[];     // Múltiples colaboradores en lote
+  roleId: string;
+  scopes: ScopeSelectionDto[];
+  validFrom: string;
+  validTo: string;
+  justification: string;
+  ticketReference?: string | null;
+}
+
+// POST /api/v1/role-assignments/:id/revoke o /role-exceptions/:id/revoke
+export interface RevokeDto {
+  reason: string;
+  version: number;
+}
+```
+
+---
+
+### 6. Feature 3: Geografía Comercial y Filtros en Cascada (`/api/v1/geography/*`)
+Archivo DTO backend: `src/modules/geography/dto/geography-response.dto.ts`
+
+```typescript
+// GET /api/v1/geography/zones
+export interface CommercialZoneResponseDto {
+  id: string;   // UUID
+  code: string; // "ZONA-CENTRO"
+  name: string; // "Metro Centro"
+}
+
+// GET /api/v1/geography/zones/:zoneId/locations
+export interface CommercialLocationResponseDto {
+  id: string;   // UUID
+  code: string; // "LOC-001"
+  name: string; // "Liverpool Demo Insurgentes"
+}
+```
+
+---
+
+### 7. Feature 3: Estructuras Comerciales, Árbol y Grupos P-02 (`/api/v1/structures/*`)
+Archivos DTO backend: `src/modules/structures/presentation/dto/`
+
+```typescript
+// GET /api/v1/structures/tree?locationId=...&period=... (CU-EST-001)
+export interface SectionResponseDto {
+  id: string;
+  code: string;
+  name: string;
+  assignmentOrigin: "ANCHOR" | "MANUAL" | "INITIAL_LOAD" | "SCHEDULED";
+  isAnchor: boolean; // Bandera de Sección Ancla fija 🔒
+}
+
+export interface GroupCollaboratorDto {
+  employeeId: string;
+  assignmentIdExternal: string;
+  fullName: string;
+  positionId: string;
+  positionTitle: string;
+  anchorSectionId: string;
+  anchorSectionCode: string;
+  anchorSectionName: string;
+}
+
+export interface CommercialGroupResponseDto {
+  id: string;
+  sequenceNumber: number;
+  displayCode: string; // "Grupo 001", "Grupo 002" (Autonumeración atómica P-02)
+  name: string;
+  sections: SectionResponseDto[];
+  collaborators: GroupCollaboratorDto[];
+}
+
+export interface NodeLeaderDto {
+  employeeId?: string | null;
+  name: string;
+  positionTitle: string;
+  avatarUrl?: string | null;
+  isVacant: boolean;
+}
+
+export interface TreeNodeResponseDto {
+  id: string;
+  externalCode: string | null;
+  displayName: string;
+  levelType: "LOCATION" | "MANAGEMENT" | "DEPARTMENT" | "GROUP" | "SECTION";
+  depth: number;
+  parentId: string | null;
+  leader?: NodeLeaderDto | null;
+  leaders?: NodeLeaderDto[];
+  departmentVersion?: number | null; // Token de versión para If-Match
+  aggregatedSectionsCount?: number;
+  isReadOnly?: boolean;
+  periodCode?: string;
+  periodStatus?: string;
+  groups?: CommercialGroupResponseDto[];
+  children: TreeNodeResponseDto[];
+}
+
+// POST /api/v1/structures/departments/:departmentId/groups
+export interface CreateGroupDto {
+  name: string; // ej. "Grupo Belleza 1"
+}
+
+export interface CommercialGroupCreatedResponseDto {
+  id: string;
+  businessStructureId: string;
+  departmentNodeId: string;
+  sequenceNumber: number;
+  displayCode: string; // "Grupo 003"
+  name: string;
+  effectiveStart: string;
+  effectiveEnd: string | null;
+  status: string;
+  version: string;
+  createdBy: string | null;
+  createdAt: string;
+}
+
+// PUT /api/v1/structures/groups/:groupId
+export interface UpdateGroupNameDto {
+  name: string;
+}
+
+// PATCH /api/v1/structures/departments/:departmentId/sections/move (Drag & Drop)
+// Regla RN-030: Rechaza el movimiento con 422 si la sección es Sección Ancla (🔒)
+export interface MoveSectionDto {
+  sectionId: string;     // UUID de sección (virtual)
+  targetGroupId: string; // UUID del grupo destino
+}
+
+export interface MoveSectionResponseDto {
+  message: string;
+  sectionId: string;
+  newGroupId: string;
+}
+
+// POST /api/v1/structures/groups/:groupId/sections
+export interface AssignSectionDto {
+  sectionId: string;
+}
+
+export interface AssignSectionResponseDto {
+  message: string;
+  assignmentId: string;
+  groupId: string;
+  sectionId: string;
+  sectionCode: string;
+  assignmentOrigin: string;
+  newDepartmentVersion: number;
+}
+
+// POST /api/v1/structures/departments/:departmentId/publish
+export interface PublishDepartmentDto {
+  period?: string; // YYYY-MM
+  notes?: string;
+}
+
+export interface PublishDepartmentResponseDto {
+  message: string;
+  departmentId: string;
+  periodCode: string;
+  version: number;
+  publishedAt: string;
+  totalGroups: number;
+  totalSections: number;
+}
+```
+
+---
+
+### 8. Feature 4: Planeación Futura, Cambios Programados y Corte (`/api/v1/structures/*`)
+Archivo DTO backend: `src/modules/structures/presentation/dto/structures-planning.dto.ts`
+
+```typescript
+// GET & PUT /api/v1/structures/calendar/operational-cutoff (CU-ADM-007)
+export interface OperationalCutoffResponseDto {
+  periodCode: string;     // "2026-10"
+  status: "OPEN" | "HISTORICAL" | "CLOSED";
+  editingStart: string;
+  editingEnd: string;
+  isEditable: boolean;
+  daysRemaining: number;
+  cutoffDate: string;     // "2026-10-01"
+}
+
+// POST /api/v1/structures/scheduled-changes (CU-ADM-006)
+export interface CreateScheduledChangeDto {
+  departmentId: string;
+  effectiveDate: string;  // Ventana: hasta 6 meses futuros
+  changeType: "SECTION_MOVE" | "GROUP_CREATE" | "GROUP_INACTIVATE";
+  payload: Record<string, unknown>;
+  justification: string;
+}
+```
+
+---
+
+### 9. Feature 5: Reportes Dinámicos y Exportación CSV / TXT (`/api/v1/reports/*`)
+Archivo DTO backend: `src/modules/reports/presentation/dto/report-query.dto.ts`
+
+```typescript
+// GET /api/v1/reports/role-based
+export interface ReportRoleBasedQueryDto {
+  startDate?: string;    // YYYY-MM-DD
+  endDate?: string;      // YYYY-MM-DD
+  period?: string;       // YYYY-MM
+  zoneId?: string;
+  locationId?: string;
+  managementId?: string;
+  departmentId?: string;
+  groupId?: string;
+  employeeId?: string;
+  positionId?: string;
+  columns?: string;      // "location,department,group,sectionName"
+  selectAll?: boolean;
+  page?: number;         // Default: 1
+  limit?: number;        // Default: 50, máx: 200
+}
+
+// GET /api/v1/reports/general
+export interface ReportGeneralQueryDto extends ReportRoleBasedQueryDto {
+  division?: "LIVERPOOL" | "SUBURBIA" | "COMPRAS" | "PAC";
+}
+
+// GET /api/v1/reports/export/csv y /export/txt
+export interface ReportExportQueryDto {
+  reportType: "ROLE_BASED" | "GENERAL" | "COMPENSATIONS";
+  period?: string;
+  startDate?: string;
+  endDate?: string;
+  locationId?: string;
+  departmentId?: string;
+  columns?: string;
+  variant?: string;
+  division?: "LIVERPOOL" | "SUBURBIA" | "COMPRAS" | "PAC";
+}
+```
+
+---
+
+### 10. Feature 6: Historial y Auditoría Transversal (`/api/v1/audit/*`)
+Archivo DTO backend: `src/modules/audit/presentation/dto/`
+
+```typescript
+// GET /api/v1/audit/logs
+export interface AuditLogsQueryDto {
+  startDate?: string;
+  endDate?: string;
+  locationId?: string;
+  action?: string;       // "SECTION_MOVED", "GROUP_CREATED", etc.
+  entityType?: string;   // "GROUP", "SECTION", "DEPARTMENT", "ROLE"
+  actorUserId?: string;
+  userSearch?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface AuditLogItemDto {
+  eventId: string;
+  timestamp: string;
+  actor: {
+    userId: string;
+    userName: string;
+    email: string;
+  };
+  action: string;
+  entityType: string;
+  entityId: string;
+  locationName?: string;
+  departmentName?: string;
+  correlationId?: string;
+  beforeState?: Record<string, unknown> | null;
+  afterState?: Record<string, unknown> | null;
+  diffSummary?: string;
+}
+
+export interface PaginatedAuditLogsResponseDto {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  items: AuditLogItemDto[];
+}
+```
+
+---
+
+### 11. Feature 6: Cargas Masivas Iniciales (`/api/v1/admin/batch-import/*`)
+Archivo DTO backend: `src/modules/batch-import/presentation/dto/batch-import.dto.ts`
+
+```typescript
+// POST /api/v1/admin/batch-import (CU-CIN-001)
+export interface BatchImportRowDto {
+  locationCode: string;
+  parentDepartmentCode: string;
+  groupName: string;
+  groupCode?: string;
+  sectionCode: string;
+  assignmentOrigin: "INITIAL_LOAD" | "ANCHOR";
+}
+
+export interface BatchImportDto {
+  fileName: string;
+  dryRun: boolean;      // true: validación previa; false: persistencia en BD
+  period: string;       // YYYY-MM
+  rows: BatchImportRowDto[];
+}
+
+export interface BatchImportValidationErrorDto {
+  rowNumber: number;
+  field: string;
+  value?: unknown;
+  message: string;
+}
+
+export interface BatchImportResultDto {
+  success: boolean;
+  dryRun: boolean;
+  period: string;
+  validRowsCount: number;
+  invalidRowsCount: number;
+  processedGroupsCount: number;
+  processedAssignmentsCount: number;
+  errors: BatchImportValidationErrorDto[];
+  summary: string;
+}
+```
+
+---
+
+### 12. Sistema y Monitoreo (Health Check) (`/api/v1/health`)
+
+```typescript
+// GET /api/v1/health
+export interface HealthResponse {
+  status: "ok" | "degraded" | "down";
+  timestamp: string;
+  uptime: number;
+  database: "connected" | "disconnected";
+}
+```
 
 ---
 

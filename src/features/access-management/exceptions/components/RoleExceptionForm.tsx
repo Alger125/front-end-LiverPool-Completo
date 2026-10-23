@@ -286,7 +286,7 @@ export function RoleExceptionForm({
 				</button>
 				<button
 					className="role-workspace__btn role-workspace__btn--primary"
-					disabled={selectedCollaborator?.status === 'INACTIVE'}
+					disabled={activeRoles.length === 0 || selectedCollaborator?.status === 'INACTIVE'}
 					type="submit"
 				>
 					Guardar asignación por excepción

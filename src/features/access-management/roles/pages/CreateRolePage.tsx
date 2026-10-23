@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 
 import { APP_ROUTES } from '../../../../app/config/routes';
-import { RoleForm } from '../components/RoleForm';
+import { ReferenceRoleForm } from '../components/ReferenceRoleForm';
 
 import './CreateRolePage.css';
 
@@ -22,12 +22,13 @@ export function CreateRolePage() {
   }
 
   return (
-    <main className="create-role-page">
+    <section className="create-role-page">
       <section className="create-role-page__content">
-        <h1 className="create-role-page__title">Crear rol</h1>
+        <p className="reference-breadcrumb">Inicio / Roles y permisos / Crear Rol</p>
+        <h1 className="create-role-page__title">Crear Rol</h1>
 
-        <RoleForm onCancel={handleCancel} onCreated={handleCreated} />
+        <ReferenceRoleForm onCancel={handleCancel} onCreated={handleCreated} />
       </section>
-    </main>
+    </section>
   );
 }

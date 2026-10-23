@@ -1,3 +1,5 @@
+import { StructureComparison, OperationalCalendar, PendingStructureChanges } from '../components/PlanningReferenceViews';
+import { SHOW_DEMO_CONTROLS } from '../../../app/config/demo';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -22,11 +24,12 @@ import type {
 
 import '../styles/futurePlanning.css';
 
-type PlanningTab = 'compare' | 'publications' | 'calendar';
+type PlanningTab = 'compare' | 'publications' | 'calendar' | 'pending';
 
 export default function FuturePlanningPage() {
   const session = useSession();
 
+  const [planningSaved, setPlanningSaved] = useState(false);
   const [activeTab, setActiveTab] = useState<PlanningTab>('compare');
   const [currentPeriod, setCurrentPeriod] = useState<'Octubre 2026' | 'Noviembre 2026'>('Octubre 2026');
   const [filterDepartment, setFilterDepartment] = useState('Todos');
@@ -221,6 +224,7 @@ export default function FuturePlanningPage() {
             Programar publicación futura
           </button>
 
+          {SHOW_DEMO_CONTROLS && <>
           <button
             type="button"
             className="fp-action-btn fp-action-btn--secondary"
@@ -237,7 +241,7 @@ export default function FuturePlanningPage() {
             onClick={() => setShowConcurrencyModal(true)}
           >
             Probar Concurrencia 409
-          </button>
+          </button></>}
         </div>
       </header>
 
@@ -270,7 +274,9 @@ export default function FuturePlanningPage() {
         >
           3. Calendario operativo y avisos ({milestones.length})
         </button>
+        <button type="button" role="tab" aria-selected={activeTab === 'pending'} className={`fp-tab ${activeTab === 'pending' ? 'fp-tab--active' : ''}`} onClick={() => setActiveTab('pending')}>Cambios futuros pendientes</button>
       </div>
+      {activeTab === 'pending' && <PendingStructureChanges items={diffItems} saved={planningSaved} onSave={() => { setPlanningSaved(true); setSuccessToast('Planificación guardada.'); }} />}
 
       {/* =====================================================================
           TAB 1: COMPARAR ESTRUCTURA ACTUAL Y FUTURA (CU-ADM-005)
@@ -310,54 +316,7 @@ export default function FuturePlanningPage() {
             </div>
           </div>
 
-          <div className="fp-table-wrapper">
-            <table className="fp-table">
-              <thead>
-                <tr>
-                  <th>Sección / Departamento</th>
-                  <th>Estructura Actual (Octubre)</th>
-                  <th>Estructura Planificada (Noviembre)</th>
-                  <th>Estado / Impacto</th>
-                  <th>Vigencia Programada</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredDiffs.map((diff) => (
-                  <tr key={diff.id}>
-                    <td>
-                      <strong>{diff.sectionName}</strong>
-                      <div className="fp-subtext">{diff.departmentName}</div>
-                      {diff.isAnchor && <span className="fp-badge fp-badge--anchor">🔒 Sección Ancla</span>}
-                    </td>
-                    <td>
-                      <div><strong>{diff.currentGroup}</strong></div>
-                      <div className="fp-subtext">Responsable: {diff.currentResponsible}</div>
-                    </td>
-                    <td>
-                      <div>
-                        <strong>{diff.futureGroup}</strong>
-                        {diff.currentGroup !== diff.futureGroup && (
-                          <span className="fp-badge fp-badge--moved">⇄ Traslado</span>
-                        )}
-                      </div>
-                      <div className="fp-subtext">Responsable: {diff.futureResponsible}</div>
-                    </td>
-                    <td>
-                      <span className={`fp-status-badge fp-status-badge--${diff.status.toLowerCase().replace(' ', '-')}`}>
-                        {diff.status}
-                      </span>
-                      <div className="fp-subtext">
-                        Impacto: {diff.impactedCollaborators.length} colaborador(es)
-                      </div>
-                    </td>
-                    <td>
-                      <strong>{diff.effectiveDate}</strong>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <StructureComparison items={filteredDiffs} />
         </div>
       )}
 
@@ -434,33 +393,7 @@ export default function FuturePlanningPage() {
           TAB 3: CALENDARIO OPERATIVO Y AVISOS (CU-ADM-005)
          ===================================================================== */}
       {activeTab === 'calendar' && (
-        <div className="fp-calendar-container">
-          <h2>Calendario Operativo Oficial — Octubre / Noviembre 2026</h2>
-          <p>Hitos críticos para la captura, cierre de periodo y entrada en vigor de estructuras comerciales.</p>
-
-          <div className="fp-timeline">
-            {milestones.map((m) => (
-              <div
-                key={m.id}
-                className={`fp-timeline-step ${m.isLocked ? 'fp-timeline-step--locked' : ''} fp-timeline-step--${m.status.toLowerCase()}`}
-              >
-                <div className="fp-timeline-marker">
-                  <span>{m.day}</span>
-                </div>
-                <div className="fp-timeline-content">
-                  <div className="fp-timeline-header">
-                    <strong>{m.title}</strong>
-                    <span className="fp-timeline-date">{m.dateStr}</span>
-                  </div>
-                  <p>{m.description}</p>
-                  <span className={`fp-badge ${m.status === 'Completado' ? 'fp-badge--success' : m.status === 'En curso' ? 'fp-badge--active' : 'fp-badge--neutral'}`}>
-                    {m.status}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <div className="fp-calendar-container"><OperationalCalendar period={currentPeriod} milestones={milestones} /></div>
       )}
 
       {/* =====================================================================

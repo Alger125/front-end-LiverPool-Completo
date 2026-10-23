@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { SHOW_DEMO_CONTROLS } from '../../../../app/config/demo';
 import { APP_ROUTES } from '../../../../app/config/routes';
 import { ApiError } from '../../../../shared/api';
 import {
@@ -382,6 +383,7 @@ export default function EditRolePage() {
 				</div>
 
 				<div className="role-workspace__header-actions">
+                    {SHOW_DEMO_CONTROLS && (
 					<button
 						className="role-workspace__btn role-workspace__btn--ghost"
 						onClick={() => void handleSave(true)}
@@ -389,7 +391,7 @@ export default function EditRolePage() {
 						type="button"
 					>
 						⚡ Simular conflicto concurrencia (409)
-					</button>
+					</button>)}
 
 					<button
 						className="role-workspace__btn role-workspace__btn--secondary"
@@ -623,7 +625,7 @@ export default function EditRolePage() {
 															<span className="role-workspace__module-desc">
 																{mod.description}
 															</span>
-															<div className="role-workspace__perm-chips">
+															<details className="role-workspace__permission-details"><summary>Permisos individuales</summary><div className="role-workspace__perm-chips">
 																{activePerms.map((perm) => {
 																	const isChecked = selectedCodes.includes(
 																		perm.code,
@@ -648,7 +650,7 @@ export default function EditRolePage() {
 																		</label>
 																	);
 																})}
-															</div>
+															</div></details>
 														</td>
 
 														<td className="role-workspace__matrix-center">

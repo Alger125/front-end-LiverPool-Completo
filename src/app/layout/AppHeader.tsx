@@ -1,3 +1,4 @@
+import { SearchIcon } from '../../shared/components/AppIcons';
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -6,6 +7,7 @@ import {
 	setHasUnsavedChanges,
 	useSession,
 } from '../../shared/auth';
+import { SHOW_DEMO_CONTROLS } from '../config/demo';
 import { APP_ROUTES } from '../config/routes';
 
 import './AppHeader.css';
@@ -88,9 +90,7 @@ export function AppHeader({
 					onSubmit={handleSearchSubmit}
 					role="search"
 				>
-					<span aria-hidden="true" className="app-header__search-icon">
-						🔍
-					</span>
+					<span aria-hidden="true" className="app-header__search-icon"><SearchIcon /></span>
 					<input
 						aria-label="Buscar departamento, colaborador o ID"
 						className="app-header__search-input"
@@ -182,7 +182,7 @@ export function AppHeader({
 								</div>
 							) : null}
 
-							<label
+                            {SHOW_DEMO_CONTROLS && <label
 								style={{
 									display: 'flex',
 									alignItems: 'center',
@@ -199,9 +199,9 @@ export function AppHeader({
 									type="checkbox"
 								/>
 								<span>Simular cambios sin guardar</span>
-							</label>
+							</label>}
 
-							{onExpireSession ? (
+							{onExpireSession && SHOW_DEMO_CONTROLS ? (
 								<button
 									className="app-header__dropdown-item"
 									onClick={() => {

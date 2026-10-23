@@ -7,18 +7,12 @@ import {
 	PermissionGuard,
 	type GrantedPermissions,
 } from '../../../../shared/permissions';
-import { formatDateTime } from '../../../../shared/utils';
 import { SECURITY_PERMISSION_CODES } from '../../model/permission.model';
 import {
 	formatResultingRule,
 	getRoleExtendedMetadata,
 } from '../api/roles.api';
 
-const ROLE_STATUS_LABELS: Record<RoleSummary['status'], string> = {
-	ACTIVE: 'Activo',
-	INACTIVE: 'Inactivo',
-	DELETED: 'Eliminado',
-};
 
 function toggleSort(
 	current: RoleSortParam,
@@ -118,19 +112,6 @@ export function RoleTable({
 						/>
 						<th scope="col">Descripción</th>
 						<th scope="col">Regla de Alcance</th>
-						<th scope="col">Permisos</th>
-						<SortableHeader
-							field="status"
-							label="Estado"
-							onSortChange={onSortChange}
-							sort={sort}
-						/>
-						<SortableHeader
-							field="updatedAt"
-							label="Última modificación"
-							onSortChange={onSortChange}
-							sort={sort}
-						/>
 						<th scope="col">Acciones</th>
 					</tr>
 				</thead>
@@ -161,21 +142,6 @@ export function RoleTable({
 									<span className="roles-table__rule-chip" title={ruleSummary}>
 										{ruleSummary}
 									</span>
-								</td>
-								<td className="roles-table__count-cell" data-label="Permisos">
-									<span className="roles-table__count-badge">
-										{role.permissionCount}
-									</span>
-								</td>
-								<td data-label="Estado">
-									<span
-										className={`roles-table__status roles-table__status--${role.status.toLowerCase()}`}
-									>
-										{ROLE_STATUS_LABELS[role.status]}
-									</span>
-								</td>
-								<td className="roles-table__date" data-label="Última modificación">
-									{formatDateTime(role.updatedAt)}
 								</td>
 								<td className="roles-table__actions-cell" data-label="Acciones">
 									<div className="roles-table__actions">

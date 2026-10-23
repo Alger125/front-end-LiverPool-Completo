@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { Providers } from './app/providers';
 
 import "./index.css";
+import "./app/styles/reference.css";
 
 async function enableMocking(): Promise<void> {
     if (!import.meta.env.DEV) {

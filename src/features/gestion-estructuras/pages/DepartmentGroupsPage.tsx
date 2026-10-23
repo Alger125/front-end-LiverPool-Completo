@@ -1,3 +1,4 @@
+import { LINEA_BLANCA_GROUPS, LINEA_BLANCA_SECTIONS } from '../mocks/referenceGroups.mocks';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 
@@ -64,6 +65,8 @@ export default function DepartmentGroupsPage() {
   const session = useSession();
 
   const initialGroupParam = searchParams.get('groupId');
+  const availableSections = departmentId === 'dep-linea-blanca' ? LINEA_BLANCA_SECTIONS : MOCK_AVAILABLE_SECTIONS;
+  const initialGroups = departmentId === 'dep-linea-blanca' ? LINEA_BLANCA_GROUPS : MOCK_GROUPS;
   const deptNameParam = searchParams.get('deptName');
   const managerParam = searchParams.get('manager');
   const originParam = searchParams.get('origin');
@@ -74,12 +77,12 @@ export default function DepartmentGroupsPage() {
     originParam === 'corporate' ||
     Boolean(departmentId?.startsWith('corp-'));
 
-  const [activeTab, setActiveTab] = useState<ActiveWorkspaceTab>('sections');
-  const [groups, setGroups] = useState<CommercialGroup[]>(MOCK_GROUPS);
+  const [activeTab, setActiveTab] = useState<ActiveWorkspaceTab>(initialGroupParam ? 'sections' : 'table');
+  const [groups, setGroups] = useState<CommercialGroup[]>(initialGroups);
   const [selectedGroupId, setSelectedGroupId] = useState<string>(() => {
     if (
       initialGroupParam &&
-      MOCK_GROUPS.some((g) => g.id === initialGroupParam)
+      initialGroups.some((g) => g.id === initialGroupParam)
     ) {
       return initialGroupParam;
     }
@@ -163,22 +166,22 @@ export default function DepartmentGroupsPage() {
     const normalizedSearch = search.trim().toLowerCase();
 
     if (!normalizedSearch) {
-      return MOCK_AVAILABLE_SECTIONS;
+      return availableSections;
     }
 
-    return MOCK_AVAILABLE_SECTIONS.filter((section) =>
+    return availableSections.filter((section) =>
       `${section.name} ${section.description} ${section.code ?? ''}`
         .toLowerCase()
         .includes(normalizedSearch),
     );
-  }, [search]);
+  }, [search, availableSections]);
 
   const selectedSections = useMemo(
     () =>
-      MOCK_AVAILABLE_SECTIONS.filter((section) =>
+      availableSections.filter((section) =>
         selectedGroup?.sectionIds.includes(section.id),
       ),
-    [selectedGroup],
+    [selectedGroup, availableSections],
   );
 
   const handleCreateGroup = (name: string, description?: string) => {
@@ -268,7 +271,7 @@ export default function DepartmentGroupsPage() {
     void assignSectionBackend(selectedGroup.id, sectionId).catch(() => {});
 
     setUnsavedChangesCount((c) => c + 1);
-    const secObj = MOCK_AVAILABLE_SECTIONS.find((s) => s.id === sectionId);
+    const secObj = availableSections.find((s) => s.id === sectionId);
     setSuccessMessage(
       `Sección "${secObj?.name ?? sectionId}" asignada a ${selectedGroup.name}`,
     );
@@ -300,7 +303,7 @@ export default function DepartmentGroupsPage() {
     void unassignSectionBackend(selectedGroup.id, sectionId).catch(() => {});
 
     setUnsavedChangesCount((c) => c + 1);
-    const secObj = MOCK_AVAILABLE_SECTIONS.find((s) => s.id === sectionId);
+    const secObj = availableSections.find((s) => s.id === sectionId);
     setSuccessMessage(
       `Sección "${secObj?.name ?? sectionId}" desasignada y devuelta a disponibles.`,
     );
@@ -342,7 +345,7 @@ export default function DepartmentGroupsPage() {
     }
     const anchorIds = deleteTargetGroup.anchorSectionIds ?? [];
     if (anchorIds.length > 0) {
-      const anchorNames = MOCK_AVAILABLE_SECTIONS.filter((s) =>
+      const anchorNames = availableSections.filter((s) =>
         anchorIds.includes(s.id),
       )
         .map((s) => s.name)
@@ -353,7 +356,7 @@ export default function DepartmentGroupsPage() {
       };
     }
     return { allowed: true, reason: '' };
-  }, [deleteTargetGroup, groups.length]);
+  }, [deleteTargetGroup, groups.length, availableSections]);
 
   const handleConfirmDeleteGroup = () => {
     if (!deleteTargetGroup || !deleteEligibility.allowed) {
@@ -400,7 +403,7 @@ export default function DepartmentGroupsPage() {
       return;
     }
 
-    const section = MOCK_AVAILABLE_SECTIONS.find((s) => s.id === sectionId);
+    const section = availableSections.find((s) => s.id === sectionId);
     if (!section) return;
 
     // Verificar si ya está en cambios pendientes
@@ -529,9 +532,9 @@ export default function DepartmentGroupsPage() {
               {groups.length} grupos · {allAssignedSectionIds.size} secciones asignadas
             </span>
           </div>
-          <h1 className="gm-dept-header__title">{departmentLabel}</h1>
+          <h1 className="gm-dept-header__title">{activeTab === 'table' ? 'Administración de Grupos' : activeTab === 'sections' ? 'Editar Grupo' : 'Movimiento de Secciones entre Grupos'}</h1>
           <p className="gm-dept-header__subtitle">
-            Administra los grupos comerciales, protege las Secciones Ancla (🔒), mueve secciones entre grupos y programa publicaciones futuras.
+            {departmentLabel} · {managerLabel}
           </p>
         </div>
 
@@ -565,6 +568,7 @@ export default function DepartmentGroupsPage() {
         <button
           type="button"
           role="tab"
+          aria-label="1. Administrar Grupos y Secciones"
           aria-selected={activeTab === 'sections'}
           className={
             activeTab === 'sections'
@@ -573,31 +577,33 @@ export default function DepartmentGroupsPage() {
           }
           onClick={() => setActiveTab('sections')}
         >
-          1. Administrar Grupos y Secciones (CU-ADM-002 / 003)
+          Editar grupos y secciones
         </button>
 
         <button
           type="button"
           role="tab"
+          aria-label="2. Tabla Contenedora y Publicaciones"
           aria-selected={activeTab === 'table'}
           className={
             activeTab === 'table' ? 'gm-tab gm-tab--active' : 'gm-tab'
           }
           onClick={() => setActiveTab('table')}
         >
-          2. Tabla Contenedora y Publicaciones (CU-ADM-001)
+          Grupos y publicaciones
         </button>
 
         <button
           type="button"
           role="tab"
+          aria-label="3. Mover Secciones entre Grupos"
           aria-selected={activeTab === 'move'}
           className={
             activeTab === 'move' ? 'gm-tab gm-tab--active' : 'gm-tab'
           }
           onClick={() => setActiveTab('move')}
         >
-          3. Mover Secciones entre Grupos (CU-ADM-004)
+          Mover secciones entre grupos
           {pendingMovements.length > 0 && (
             <span className="gm-tab__badge">{pendingMovements.length}</span>
           )}
@@ -700,7 +706,7 @@ export default function DepartmentGroupsPage() {
                         aria-label={`Renombrar ${group.name}`}
                         onClick={() => setRenameTargetGroup(group)}
                       >
-                        ✎ Renombrar
+                        <span aria-hidden="true">✎</span>
                       </button>
 
                       <button
@@ -710,7 +716,7 @@ export default function DepartmentGroupsPage() {
                         aria-label={`Eliminar ${group.name}`}
                         onClick={() => setDeleteTargetGroup(group)}
                       >
-                        🗑 Eliminar
+                        <span aria-hidden="true">⌫</span>
                       </button>
                     </div>
                   </div>
@@ -884,9 +890,9 @@ export default function DepartmentGroupsPage() {
           <div className="gm-table-card">
             <div className="gm-table-card__header">
               <div>
-                <h2>Contenedor de Grupos del {departmentLabel}</h2>
+                <h2>{departmentLabel}</h2>
                 <p>
-                  Vista consolidada de grupos, secciones asignadas, responsables titulares/heredados y fechas de vigencia.
+                  Grupos, secciones y responsables del departamento.
                 </p>
               </div>
               <button
@@ -914,7 +920,7 @@ export default function DepartmentGroupsPage() {
                 </thead>
                 <tbody>
                   {groups.map((group) => {
-                    const groupSections = MOCK_AVAILABLE_SECTIONS.filter((s) =>
+                    const groupSections = availableSections.filter((s) =>
                       group.sectionIds.includes(s.id),
                     );
                     const primaryResp =
@@ -937,24 +943,7 @@ export default function DepartmentGroupsPage() {
                           )}
                         </td>
                         <td>{group.description ?? 'Contenedor comercial'}</td>
-                        <td>
-                          {groupSections.length === 0 ? (
-                            <span className="gm-muted">Sin secciones</span>
-                          ) : (
-                            <div className="gm-section-chips">
-                              {groupSections.map((sec) => (
-                                <span
-                                  key={sec.id}
-                                  className="gm-section-chip"
-                                >
-                                  {group.anchorSectionIds?.includes(sec.id)
-                                    ? `🔒 ${sec.name}`
-                                    : sec.name}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </td>
+                        <td><span className="gm-section-count" title={groupSections.map(section => section.name).join(', ')}>{groupSections.length}</span></td>
                         <td>
                           <div className="gm-resp-box">
                             <span>{primaryResp}</span>
@@ -998,16 +987,18 @@ export default function DepartmentGroupsPage() {
                             <button
                               type="button"
                               className="gm-mini-btn"
-                              onClick={() => setRenameTargetGroup(group)}
+                              aria-label={`Renombrar ${group.name}`}
+                        onClick={() => setRenameTargetGroup(group)}
                             >
-                              ✎ Renombrar
+                              <span aria-hidden="true">✎</span>
                             </button>
                             <button
                               type="button"
                               className="gm-mini-btn gm-mini-btn--danger"
-                              onClick={() => setDeleteTargetGroup(group)}
+                              aria-label={`Eliminar ${group.name}`}
+                        onClick={() => setDeleteTargetGroup(group)}
                             >
-                              🗑 Eliminar
+                              <span aria-hidden="true">⌫</span>
                             </button>
                           </div>
                         </td>
@@ -1021,21 +1012,10 @@ export default function DepartmentGroupsPage() {
 
           {/* Bandeja inferior de Publicaciones Programadas (CU-ADM-001) */}
           <div className="gm-scheduled-tray">
-            <h3>📅 Bandeja de Publicaciones Programadas</h3>
-            <div className="gm-scheduled-list">
-              {scheduledPublications.map((item) => (
-                <article key={item.id} className="gm-scheduled-card">
-                  <div>
-                    <strong>
-                      {item.groupName} · Vigencia: {item.effectiveDate}
-                    </strong>
-                    <p>{item.summary}</p>
-                    <small>Programado por: {item.author}</small>
-                  </div>
-                  <span className="gm-scheduled-status">{item.status}</span>
-                </article>
-              ))}
-            </div>
+            <h3>Publicaciones programadas</h3>
+            <div className="gm-table-scroll"><table className="gm-containers-table"><thead><tr><th>Grupo</th><th>Movimiento programado</th><th>Fecha de aplicación</th><th>Programado por</th><th>Estado</th></tr></thead><tbody>
+              {scheduledPublications.map(item => <tr key={item.id}><td><strong>{item.groupName}</strong></td><td>{item.summary}</td><td>{item.effectiveDate}</td><td>{item.author}</td><td><span className="gm-scheduled-status">{item.status}</span></td></tr>)}
+            </tbody></table></div>
           </div>
         </div>
       )}
@@ -1070,7 +1050,7 @@ export default function DepartmentGroupsPage() {
                   </p>
                 ) : (
                   sourceGroup?.sectionIds.map((secId) => {
-                    const sec = MOCK_AVAILABLE_SECTIONS.find(
+                    const sec = availableSections.find(
                       (s) => s.id === secId,
                     );
                     if (!sec) return null;
@@ -1148,7 +1128,7 @@ export default function DepartmentGroupsPage() {
 
               <div className="gm-move-list">
                 {targetGroup?.sectionIds.map((secId) => {
-                  const sec = MOCK_AVAILABLE_SECTIONS.find(
+                  const sec = availableSections.find(
                     (s) => s.id === secId,
                   );
                   if (!sec) return null;

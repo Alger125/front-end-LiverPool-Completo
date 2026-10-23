@@ -20,7 +20,7 @@ describe('Features 4, 5 y 6 — Planeación Futura, Reportes, Historial y Cargas
     expect(screen.getByText(/Planeación Futura y Publicaciones Estructurales/i)).toBeInTheDocument();
 
     // 1. Pestaña 1: Comparar estructura actual y futura
-    expect(screen.getByText(/Sección 102 — Coctel y Evento Social/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Sección 102 — Coctel y Evento Social/i)[0]).toBeInTheDocument();
     expect(screen.getAllByText(/Modificado/i).length).toBeGreaterThan(0);
 
     // 2. Conmutador de periodos
@@ -50,10 +50,10 @@ describe('Features 4, 5 y 6 — Planeación Futura, Reportes, Historial y Cargas
       </MemoryRouter>,
     );
 
-    expect(screen.getByText(/Centro de Reportes y Extracción de Estructuras/i)).toBeInTheDocument();
+    expect(screen.getByText(/Consulta Módulo de Reportes/i)).toBeInTheDocument();
 
     // Iniciar Reporte por Rol
-    fireEvent.click(screen.getByRole('button', { name: /Iniciar Generación de Reporte por Rol →/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Reportes por Rol/i }));
 
     // Paso 1: Filtros y Periodo
     expect(screen.getByText(/Paso 1: Configuración de Periodo y Filtros de Alcance/i)).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe('Features 4, 5 y 6 — Planeación Futura, Reportes, Historial y Cargas
     );
 
     // Iniciar Reporte General
-    fireEvent.click(screen.getByRole('button', { name: /Iniciar Generación de Reporte General →/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Reportes General/i }));
 
     expect(screen.getByText(/Paso 1: Definición de Rango de Fechas/i)).toBeInTheDocument();
 
@@ -105,7 +105,7 @@ describe('Features 4, 5 y 6 — Planeación Futura, Reportes, Historial y Cargas
       </MemoryRouter>,
     );
 
-    expect(screen.getByText(/Consulta del Historial de Movimientos/i)).toBeInTheDocument();
+    expect(screen.getByText(/Consulta del historial/i)).toBeInTheDocument();
     expect(screen.getByText(/Resumen de Auditoría/i)).toBeInTheDocument();
 
     // Abrir detalle del primer evento

@@ -1,6 +1,8 @@
+import { StructureIcon, RolesIcon, ReportsIcon } from '../../../shared/components/AppIcons';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { SHOW_DEMO_CONTROLS } from '../../../app/config/demo';
 import { APP_ROUTES } from '../../../app/config/routes';
 import { SECURITY_PERMISSION_CODES } from '../../access-management/model/permission.model';
 import { httpGet } from '../../../shared/api';
@@ -18,7 +20,6 @@ interface HomeModuleDefinition {
 	title: string;
 	subtitle: string;
 	path: string;
-	iconSymbol: string;
 	featured?: boolean;
 	tealIcon?: boolean;
 	anyOfPermissions: readonly string[];
@@ -30,7 +31,6 @@ const HOME_MODULES: readonly HomeModuleDefinition[] = [
 		title: 'Gestión de Estructuras',
 		subtitle: 'Zona → Sección',
 		path: APP_ROUTES.structures,
-		iconSymbol: '▦',
 		featured: true,
 		anyOfPermissions: [
 			SECURITY_PERMISSION_CODES.STRUCTURE_VIEW,
@@ -42,7 +42,6 @@ const HOME_MODULES: readonly HomeModuleDefinition[] = [
 		title: 'Roles y permisos',
 		subtitle: 'Accesos y alcance',
 		path: APP_ROUTES.roles,
-		iconSymbol: '♟',
 		tealIcon: true,
 		anyOfPermissions: [SECURITY_PERMISSION_CODES.ROLE_VIEW],
 	},
@@ -51,21 +50,11 @@ const HOME_MODULES: readonly HomeModuleDefinition[] = [
 		title: 'Reportes',
 		subtitle: 'Histórico y operación',
 		path: APP_ROUTES.reports,
-		iconSymbol: '▤',
 		tealIcon: true,
 		anyOfPermissions: [
 			SECURITY_PERMISSION_CODES.REPORT_ROLE_VIEW,
 			SECURITY_PERMISSION_CODES.REPORT_GENERAL_VIEW,
 		],
-	},
-	{
-		id: 'history',
-		title: 'Historial',
-		subtitle: 'Movimientos y auditoría',
-		path: '/history',
-		iconSymbol: '↺',
-		tealIcon: true,
-		anyOfPermissions: [SECURITY_PERMISSION_CODES.HISTORY_VIEW],
 	},
 ];
 
@@ -142,30 +131,12 @@ export function HomePage() {
 				Selecciona un módulo para comenzar.
 			</p>
 
-			{user ? (
-				<div
-					aria-label="Contexto de sesión activa"
-					className="home-page__context-bar"
-				>
-					<span className="home-page__context-pill">
-						Perfil activo: {backendProfile?.activeRole ?? user.primaryRoleName}
-					</span>
-					<span>
-						<strong>Colaborador:</strong> {backendProfile?.displayName ?? user.fullName} ({backendProfile?.employeeNumber ?? user.employeeNumber})
-					</span>
-					<span>
-						<strong>Ubicación:</strong> {user.location}
-					</span>
-					<span>
-						<strong>Alcance:</strong> {backendProfile?.effectiveScope?.scopeSummary ?? user.scopeLabel}
-					</span>
-					{user.hasExceptionRole && user.exceptionSummary ? (
-						<span className="home-page__exception-pill">
-							Excepción vigente: {user.exceptionSummary}
-						</span>
-					) : null}
-				</div>
-			) : null}
+            {user && SHOW_DEMO_CONTROLS ? (
+              <p className="home-page__context-bar" aria-label="Contexto de sesión activa">
+                {user.fullName} · {user.primaryRoleName} · {user.location} · {user.scopeLabel}
+                {user.exceptionSummary ? <span>{user.exceptionSummary}</span> : null}
+              </p>
+            ) : null}
 
 			{visibleModules.length === 0 ? (
 				<div
@@ -202,7 +173,7 @@ export function HomePage() {
 									moduleItem.tealIcon ? 'home-module-card__icon--teal' : ''
 								}`}
 							>
-								{moduleItem.iconSymbol}
+								{moduleItem.id === 'structures' ? <StructureIcon /> : moduleItem.id === 'roles' ? <RolesIcon /> : <ReportsIcon />}
 							</span>
 
 							<div>
@@ -214,7 +185,7 @@ export function HomePage() {
 				</div>
 			)}
 
-			<aside
+            {SHOW_DEMO_CONTROLS && <aside
 				aria-label="Selector de rol para validación funcional (CU-HOM-002)"
 				className="home-page__role-switcher"
 			>
@@ -260,7 +231,7 @@ export function HomePage() {
 						Excepción Activa (Andrea Torres)
 					</button>
 				</div>
-			</aside>
+			</aside>}
 		</section>
 	);
 }

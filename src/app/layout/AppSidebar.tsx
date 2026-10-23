@@ -1,3 +1,4 @@
+import { StructureIcon, RolesIcon, ReportsIcon, HistoryIcon } from '../../shared/components/AppIcons';
 import { NavLink, type NavLinkRenderProps } from 'react-router-dom';
 
 import { SECURITY_PERMISSION_CODES } from '../../features/access-management/model/permission.model';
@@ -84,7 +85,7 @@ export function AppSidebar({ isOpen = false, onNavigate }: AppSidebarProps) {
 							to={APP_ROUTES.structures}
 						>
 							<span aria-hidden="true" className="app-sidebar__icon">
-								▦
+								<StructureIcon />
 							</span>
 							<span>Estructuras</span>
 						</NavLink>
@@ -97,7 +98,7 @@ export function AppSidebar({ isOpen = false, onNavigate }: AppSidebarProps) {
 							to={APP_ROUTES.roles}
 						>
 							<span aria-hidden="true" className="app-sidebar__icon">
-								⚿
+								<RolesIcon />
 							</span>
 							<span>Roles y permisos</span>
 						</NavLink>
@@ -110,7 +111,7 @@ export function AppSidebar({ isOpen = false, onNavigate }: AppSidebarProps) {
 							to={APP_ROUTES.reports}
 						>
 							<span aria-hidden="true" className="app-sidebar__icon">
-								▤
+								<ReportsIcon />
 							</span>
 							<span>Reportes</span>
 						</NavLink>
@@ -123,7 +124,7 @@ export function AppSidebar({ isOpen = false, onNavigate }: AppSidebarProps) {
 							to={APP_ROUTES.history}
 						>
 							<span aria-hidden="true" className="app-sidebar__icon">
-								↺
+								<HistoryIcon />
 							</span>
 							<span>Historial</span>
 						</NavLink>

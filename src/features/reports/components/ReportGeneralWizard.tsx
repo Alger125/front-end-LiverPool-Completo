@@ -93,13 +93,13 @@ export function ReportGeneralWizard({ onBackToHub, canDownload }: ReportGeneralW
     <div className="rep-wizard">
       <div className="rep-wizard__nav">
         <button type="button" className="rep-back-btn" onClick={onBackToHub}>
-          ← Volver al Hub de Reportes
+          Inicio / Reportes
         </button>
-        <span className="rep-pill">CU-EST-003: Reporte General</span>
+
       </div>
 
       <header className="rep-wizard__header">
-        <h1>Generación de Reporte General por Rango de Fechas</h1>
+        <h1>Configurar Reporte General</h1>
         <p>Realiza extracciones completas de la estructura comercial definiendo ventanas de tiempo personalizadas.</p>
       </header>
 

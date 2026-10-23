@@ -122,9 +122,9 @@ export function HistoryPage() {
       <header className="his-header">
         <div className="his-header__left">
           <span className="his-pill">CU-HIS-001: Auditoría Transversal</span>
-          <h1 className="his-title">Consulta del Historial de Movimientos</h1>
+          <h1 className="his-title">Consulta del historial</h1>
           <p className="his-subtitle">
-            Bitácora inmutable de todas las acciones efectuadas en la plataforma: creación y edición de roles, asignaciones por excepción, movimientos de secciones y publicaciones.
+            Consulta los movimientos y cambios realizados en la estructura.
           </p>
         </div>
 
@@ -136,7 +136,7 @@ export function HistoryPage() {
             onClick={handleExportCsv}
             title={!canDownloadHistory ? 'Permiso HISTORY_DOWNLOAD requerido' : 'Descargar bitácora en CSV'}
           >
-            📥 Descargar CSV de Bitácora
+            Descargar CSV
           </button>
         </div>
       </header>

@@ -187,6 +187,8 @@ describe('Feature 2 — Roles, Permisos y Asignación por Excepción (CU-SEC-002
 			'Apoyo extraordinario de inventario en Perisur',
 		);
 
+		await waitFor(() => expect(screen.getByLabelText(/Rol a otorgar por excepción/i).querySelectorAll('option').length).toBeGreaterThan(0));
+
 		await user.click(
 			screen.getByRole('button', {
 				name: /Guardar asignación por excepción/i,

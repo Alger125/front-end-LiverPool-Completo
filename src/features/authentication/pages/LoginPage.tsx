@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { SHOW_DEMO_CONTROLS } from '../../../app/config/demo';
 import { APP_ROUTES } from '../../../app/config/routes';
 import { httpPost } from '../../../shared/api';
 import {
@@ -219,7 +220,7 @@ export function LoginPage() {
 							</div>
 						) : null}
 
-						<div className="sso-login__simulator">
+						{SHOW_DEMO_CONTROLS && <div className="sso-login__simulator">
 							<label
 								className="sso-login__simulator-label"
 								htmlFor="sso-scenario-select"
@@ -271,7 +272,7 @@ export function LoginPage() {
 								Selecciona un perfil para verificar permisos dinámicos, alcance y
 								mensajes controlados.
 							</p>
-						</div>
+						</div>}
 					</div>
 
 					<div className="sso-login__footer">

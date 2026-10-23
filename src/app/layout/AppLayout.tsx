@@ -85,6 +85,7 @@ export function AppLayout() {
 
 	return (
 		<div className="app-layout">
+            <a className="skip-link" href="#main-content">Saltar al contenido</a>
 			<AppHeader
 				displayName={session.user.fullName}
 				onExpireSession={handleSimulateInactivityExpiration}
@@ -107,7 +108,7 @@ export function AppLayout() {
 				/>
 
 				<div className="app-layout__main">
-					<main className="app-layout__content">
+					<main className="app-layout__content" id="main-content" tabIndex={-1}>
 						<Outlet />
 					</main>
 				</div>

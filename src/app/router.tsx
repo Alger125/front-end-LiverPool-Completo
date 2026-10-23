@@ -13,9 +13,8 @@ import {
 	SessionEndedPage,
 } from '../features/authentication';
 import { GestionEstructurasHome } from '../features/gestion-estructuras/components/GestionEstructurasHome';
-import CorporativoPage from '../features/gestion-estructuras/pages/CorporativoPage';
+import { StructureExplorerPage } from '../features/gestion-estructuras/pages/StructureExplorerPage';
 import DepartmentGroupsPage from '../features/gestion-estructuras/pages/DepartmentGroupsPage.tsx';
-import OperacionesPage from '../features/gestion-estructuras/pages/OperacionesPage';
 import { GlobalSearchPage } from '../features/home/pages/GlobalSearchPage';
 import { HomePage } from '../features/home/pages/HomePage';
 import { useSession } from '../shared/auth';
@@ -153,7 +152,7 @@ export const router = createBrowserRouter([
 						]}
 						moduleLabel="Estructuras de Operaciones"
 					>
-						<OperacionesPage />
+						<StructureExplorerPage key="operations" />
 					</RoutePermissionGuard>
 				),
 			},
@@ -167,7 +166,7 @@ export const router = createBrowserRouter([
 						]}
 						moduleLabel="Estructura Corporativa"
 					>
-						<CorporativoPage />
+						<StructureExplorerPage key="corporate" corporate />
 					</RoutePermissionGuard>
 				),
 			},

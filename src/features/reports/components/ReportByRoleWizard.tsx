@@ -80,13 +80,13 @@ export function ReportByRoleWizard({ onBackToHub, canDownload }: ReportByRoleWiz
     <div className="rep-wizard">
       <div className="rep-wizard__nav">
         <button type="button" className="rep-back-btn" onClick={onBackToHub}>
-          ← Volver al Hub de Reportes
+          Inicio / Reportes
         </button>
-        <span className="rep-pill">CU-EST-002: Reporte por Rol</span>
+
       </div>
 
       <header className="rep-wizard__header">
-        <h1>Generación de Reporte por Rol y Periodo</h1>
+        <h1>Configurar Reporte por Rol</h1>
         <p>Configura los filtros de periodo y estructura, selecciona las columnas de datos y previsualiza la información para exportación.</p>
       </header>
 
